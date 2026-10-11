@@ -1,0 +1,55 @@
+المكتبة في الملف driveUploader.ts، ضعه في src/lib/ وستعمل على أندرويد وويندوز ولينوكس بنفس الكود.
+
+ما تفعله المكتبة
+تستخرج ID المجلد من الرابط تلقائياً (/folders/... أو ?id=...).
+ترفع الملف على أجزاء (Resumable)، فتناسب الملفات الكبيرة والشبكات الضعيفة على الجوال.
+تعرض نسبة التقدم، وتدعم الإلغاء، وتعيد المحاولة وتكمل من حيث توقف الرفع عند انقطاع الاتصال.
+المصادقة قابلة للتبديل.
+مثال استخدام في React
+tsx
+import { uploadToDrive, extractDriveId, serviceAccountAuth } from "@/lib/driveUploader";
+
+const FOLDER_LINK = "https://drive.google.com/drive/folders/1AbC...";  // من الإعدادات
+
+const auth = serviceAccountAuth({
+  clientEmail: settings.clientEmail,
+  privateKey: settings.privateKey,
+});
+
+function UploadButton() {
+  const [pct, setPct] = useState(0);
+
+  async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const result = await uploadToDrive({
+      folder: FOLDER_LINK,
+      file,
+      auth,
+      onProgress: (p) => setPct(p.percent),
+    });
+    console.log("تم الرفع:", result.id, result.webViewLink);
+  }
+
+  return (<><input type="file" onChange={onPick} /><progress value={pct} max={100} /></>);
+}
+
+استخدمت <input type="file"> لأنه يعمل على كل المنصات، ويعيد File جاهزاً دون التعامل مع مسارات أندرويد (content://).
+
+نقطة مهمة: المصادقة
+
+رابط المجلد وحده لا يكفي للرفع إلا إذا كان المجلد عاماً بصلاحية تعديل، وهذا غير آمن ولا يعمل مع واجهة API. لذلك أضفت ثلاث طرق:
+
+الطريقة	متى تناسبك
+serviceAccountAuth	تطبيق خاص أو داخلي. لا يحتاج تسجيل دخول، لكن يجب مشاركة المجلد مع إيميل الـ service account بصلاحية Editor. المفتاح الخاص داخل التطبيق يمكن استخراجه، فلا تنشره للعامة.
+refreshTokenAuth	تحصل على refresh token مرة واحدة (مثلاً من OAuth Playground) وتخزنه بأمان عبر tauri-plugin-stronghold.
+staticTokenAuth	للاختبار السريع فقط، لأنه ينتهي بعد ساعة.
+
+إذا كان التطبيق سيوزَّع للعامة وكل مستخدم يرفع إلى Drive الخاص به، فتحتاج تسجيل دخول OAuth حقيقي. يكون ذلك عبر loopback على الديسكتوب (tauri-plugin-oauth) وdeep link على أندرويد، وأستطيع كتابته لك في خطوة لاحقة.
+
+ملاحظات تقنية
+CORS: fetch المباشر يعمل غالباً مع Google APIs. إن ظهر خطأ CORS على أندرويد، ثبّت @tauri-apps/plugin-http ومرّر fetch منه (الخيار fetch موجود في كل الدوال)، مع إضافة https://*.googleapis.com/* للـ capabilities.
+الإعدادات: احفظ رابط المجلد والمفاتيح عبر tauri-plugin-store أو Stronghold، ولا تضعها في كود الواجهة.
+بديل بدون OAuth: يمكن نشر Google Apps Script كـ Web App يستقبل الملف ويحفظه في المجلد، ويستدعيه التطبيق بطلب POST عادي. هذا أبسط بكثير لتطبيق شخصي، لكنه أبطأ مع الملفات الكبيرة.
+
+هل ستوزع التطبيق للعامة أم هو لاستخدامك أو فريقك؟ بناءً على ذلك أضيف لك تسجيل الدخول المناسب أو أكتب نسخة Apps Script.

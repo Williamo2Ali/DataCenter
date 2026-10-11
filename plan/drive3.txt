@@ -1,0 +1,416 @@
+/**
+ * driveUploader.ts
+ * مكتبة رفع ملفات إلى Google Drive – تعمل داخل Tauri (Android / Windows / Linux)
+ * لا تعتمد على أي مكتبة خارجية: fetch + WebCrypto فقط.
+ *
+ * المزايا:
+ *  - استخراج ID المجلد من الرابط تلقائياً
+ *  - رفع مجزأ (Resumable) يناسب الملفات الكبيرة والشبكات الضعيفة
+ *  - شريط تقدم + إلغاء + إعادة محاولة تلقائية
+ *  - مزوّدات مصادقة قابلة للتبديل (Refresh Token / Service Account / توكن ثابت)
+ */
+
+/* ───────────────────────── الأنواع ───────────────────────── */
+
+export type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
+
+export interface DriveAuth {
+  /** يرجع Access Token صالحاً */
+  getAccessToken(): Promise<string>;
+}
+
+export interface UploadOptions {
+  /** رابط المجلد (https://drive.google.com/drive/folders/XXXX) أو الـ ID مباشرة. مطلوب عند الإنشاء */
+  folder?: string;
+  /** إن مُرِّر: يُحدَّث هذا الملف في مكانه بدل إنشاء ملف جديد */
+  fileId?: string;
+  /** خصائص مخصصة تُحفظ على الملف (مثلاً البصمة). المفتاح+القيمة ≤ 124 بايت */
+  appProperties?: Record<string, string>;
+  /** الملف المراد رفعه (File من input أو Blob) */
+  file: Blob;
+  /** اسم الملف على Drive (الافتراضي: اسم الملف الأصلي) */
+  name?: string;
+  mimeType?: string;
+  auth: DriveAuth;
+  /** حجم الجزء بالبايت. يجب أن يكون مضاعفاً لـ 256KiB. الافتراضي 5MiB */
+  chunkSize?: number;
+  onProgress?: (p: { uploaded: number; total: number; percent: number }) => void;
+  signal?: AbortSignal;
+  /** مرّر fetch من @tauri-apps/plugin-http لتجاوز CORS إن لزم */
+  fetch?: FetchLike;
+  maxRetries?: number;
+}
+
+export interface DriveFile {
+  id: string;
+  name: string;
+  mimeType?: string;
+  webViewLink?: string;
+  size?: string;
+  modifiedTime?: string;
+  appProperties?: Record<string, string>;
+}
+
+const FILE_FIELDS = "id,name,mimeType,webViewLink,size,modifiedTime,appProperties";
+
+/* ───────────────────────── أدوات مساعدة ───────────────────────── */
+
+const CHUNK_UNIT = 256 * 1024;
+const DEFAULT_CHUNK = 20 * CHUNK_UNIT; // 5 MiB
+
+/** يستخرج ID المجلد/الملف من أي رابط Drive شائع */
+export function extractDriveId(linkOrId: string): string {
+  const s = linkOrId.trim();
+  const patterns = [/\/folders\/([a-zA-Z0-9_-]+)/, /\/d\/([a-zA-Z0-9_-]+)/, /[?&]id=([a-zA-Z0-9_-]+)/];
+  for (const p of patterns) {
+    const m = s.match(p);
+    if (m) return m[1];
+  }
+  if (/^[a-zA-Z0-9_-]{10,}$/.test(s)) return s;
+  throw new Error("رابط/معرّف مجلد Drive غير صالح");
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+function b64url(data: ArrayBuffer | string): string {
+  const bytes = typeof data === "string" ? new TextEncoder().encode(data) : new Uint8Array(data);
+  let bin = "";
+  bytes.forEach((b) => (bin += String.fromCharCode(b)));
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+/* ───────────────────────── مزوّدات المصادقة ───────────────────────── */
+
+/** توكن ثابت (للاختبار فقط – ينتهي بعد ساعة) */
+export function staticTokenAuth(token: string): DriveAuth {
+  return { getAccessToken: async () => token };
+}
+
+/**
+ * OAuth Refresh Token: تحصل على refresh_token مرة واحدة (OAuth Playground أو تسجيل دخول
+ * داخل التطبيق) ثم تخزنه (مثلاً في tauri-plugin-store / stronghold) وتمرره هنا.
+ */
+export function refreshTokenAuth(cfg: {
+  clientId: string;
+  clientSecret?: string;
+  refreshToken: string;
+  fetch?: FetchLike;
+}): DriveAuth {
+  const f = cfg.fetch ?? fetch;
+  let token = "";
+  let exp = 0;
+  return {
+    async getAccessToken() {
+      if (token && Date.now() < exp - 60_000) return token;
+      const body = new URLSearchParams({
+        client_id: cfg.clientId,
+        refresh_token: cfg.refreshToken,
+        grant_type: "refresh_token",
+      });
+      if (cfg.clientSecret) body.set("client_secret", cfg.clientSecret);
+      const res = await f("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body,
+      });
+      if (!res.ok) throw new Error(`فشل تجديد التوكن: ${res.status} ${await res.text()}`);
+      const j = await res.json();
+      token = j.access_token;
+      exp = Date.now() + j.expires_in * 1000;
+      return token;
+    },
+  };
+}
+
+/**
+ * Service Account: لا يحتاج تسجيل دخول مستخدم. يجب مشاركة المجلد مع إيميل الـ service account
+ * (client_email) بصلاحية Editor.
+ * ⚠️ المفتاح الخاص داخل التطبيق يمكن استخراجه، استخدمه فقط لتطبيق خاص/داخلي.
+ */
+export function serviceAccountAuth(cfg: {
+  clientEmail: string;
+  privateKey: string; // يبدأ بـ -----BEGIN PRIVATE KEY-----
+  scope?: string;
+  fetch?: FetchLike;
+}): DriveAuth {
+  const f = cfg.fetch ?? fetch;
+  const scope = cfg.scope ?? "https://www.googleapis.com/auth/drive";
+  let token = "";
+  let exp = 0;
+
+  async function signJwt(): Promise<string> {
+    const now = Math.floor(Date.now() / 1000);
+    const header = b64url(JSON.stringify({ alg: "RS256", typ: "JWT" }));
+    const claims = b64url(
+      JSON.stringify({
+        iss: cfg.clientEmail,
+        scope,
+        aud: "https://oauth2.googleapis.com/token",
+        iat: now,
+        exp: now + 3600,
+      })
+    );
+    const pem = cfg.privateKey.replace(/\\n/g, "\n").replace(/-----[^-]+-----/g, "").replace(/\s+/g, "");
+    const der = Uint8Array.from(atob(pem), (c) => c.charCodeAt(0));
+    const key = await crypto.subtle.importKey(
+      "pkcs8",
+      der,
+      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+      false,
+      ["sign"]
+    );
+    const sig = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new TextEncoder().encode(`${header}.${claims}`));
+    return `${header}.${claims}.${b64url(sig)}`;
+  }
+
+  return {
+    async getAccessToken() {
+      if (token && Date.now() < exp - 60_000) return token;
+      const res = await f("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+          assertion: await signJwt(),
+        }),
+      });
+      if (!res.ok) throw new Error(`فشل مصادقة service account: ${res.status} ${await res.text()}`);
+      const j = await res.json();
+      token = j.access_token;
+      exp = Date.now() + j.expires_in * 1000;
+      return token;
+    },
+  };
+}
+
+/* ───────────────────────── الرفع ───────────────────────── */
+
+export async function uploadToDrive(opts: UploadOptions): Promise<DriveFile> {
+  const f = opts.fetch ?? fetch;
+  const isUpdate = !!opts.fileId;
+  if (!isUpdate && !opts.folder) throw new Error("يلزم تحديد folder عند إنشاء ملف جديد");
+  const parentId = opts.folder ? extractDriveId(opts.folder) : "";
+  const total = opts.file.size;
+  const name = opts.name ?? (opts.file as File).name ?? "upload";
+  const mimeType = opts.mimeType || opts.file.type || "application/octet-stream";
+  const maxRetries = opts.maxRetries ?? 5;
+
+  let chunkSize = opts.chunkSize ?? DEFAULT_CHUNK;
+  chunkSize = Math.max(CHUNK_UNIT, Math.floor(chunkSize / CHUNK_UNIT) * CHUNK_UNIT);
+
+  const authHeader = async () => ({ Authorization: `Bearer ${await opts.auth.getAccessToken()}` });
+
+  /* 1) فتح جلسة رفع (إنشاء POST أو تحديث PATCH) */
+  const base = "https://www.googleapis.com/upload/drive/v3/files";
+  const initUrl = isUpdate
+    ? `${base}/${opts.fileId}?uploadType=resumable&supportsAllDrives=true&fields=${FILE_FIELDS}`
+    : `${base}?uploadType=resumable&supportsAllDrives=true&fields=${FILE_FIELDS}`;
+  const metadata: Record<string, unknown> = isUpdate
+    ? { ...(opts.name ? { name: opts.name } : {}) }
+    : { name, parents: [parentId], mimeType };
+  if (opts.appProperties) metadata.appProperties = opts.appProperties;
+
+  const initRes = await f(initUrl, {
+    method: isUpdate ? "PATCH" : "POST",
+    headers: {
+      ...(await authHeader()),
+      "Content-Type": "application/json; charset=UTF-8",
+      "X-Upload-Content-Type": mimeType,
+      "X-Upload-Content-Length": String(total),
+    },
+    body: JSON.stringify(metadata),
+    signal: opts.signal,
+  });
+  if (!initRes.ok) throw new Error(`فشل بدء الرفع: ${initRes.status} ${await initRes.text()}`);
+  const sessionUrl = initRes.headers.get("Location");
+  if (!sessionUrl) throw new Error("لم يرجع Drive رابط جلسة الرفع");
+
+  const report = (uploaded: number) =>
+    opts.onProgress?.({ uploaded, total, percent: total ? Math.round((uploaded / total) * 100) : 100 });
+
+  /* ملف فارغ */
+  if (total === 0) {
+    const r = await f(sessionUrl, { method: "PUT", headers: await authHeader(), body: new Blob([]), signal: opts.signal });
+    if (!r.ok) throw new Error(`فشل الرفع: ${r.status} ${await r.text()}`);
+    report(0);
+    return r.json();
+  }
+
+  /* سؤال Drive عن عدد البايتات المستلمة (للاستئناف بعد انقطاع) */
+  async function queryOffset(): Promise<number | DriveFile> {
+    const r = await f(sessionUrl!, {
+      method: "PUT",
+      headers: { ...(await authHeader()), "Content-Range": `bytes */${total}` },
+      signal: opts.signal,
+    });
+    if (r.status === 200 || r.status === 201) return r.json();
+    if (r.status === 308) {
+      const range = r.headers.get("Range"); // bytes=0-N
+      return range ? parseInt(range.split("-")[1], 10) + 1 : 0;
+    }
+    throw new Error(`تعذر الاستعلام عن حالة الرفع: ${r.status}`);
+  }
+
+  /* 2) رفع الأجزاء */
+  let offset = 0;
+  let retries = 0;
+  while (offset < total) {
+    if (opts.signal?.aborted) throw new DOMException("أُلغي الرفع", "AbortError");
+    const end = Math.min(offset + chunkSize, total);
+    try {
+      const res = await f(sessionUrl, {
+        method: "PUT",
+        headers: {
+          ...(await authHeader()),
+          "Content-Range": `bytes ${offset}-${end - 1}/${total}`,
+        },
+        body: opts.file.slice(offset, end),
+        signal: opts.signal,
+      });
+
+      if (res.status === 200 || res.status === 201) {
+        report(total);
+        return res.json();
+      }
+      if (res.status === 308) {
+        const range = res.headers.get("Range");
+        offset = range ? parseInt(range.split("-")[1], 10) + 1 : end;
+        retries = 0;
+        report(offset);
+        continue;
+      }
+      if (res.status >= 500 || res.status === 429) throw new Error(`HTTP ${res.status}`);
+      throw new Error(`فشل الرفع: ${res.status} ${await res.text()}`);
+    } catch (err: any) {
+      if (err?.name === "AbortError") throw err;
+      const transient = /^HTTP |Failed to fetch|NetworkError|Load failed/i.test(String(err?.message ?? err));
+      if (!transient || ++retries > maxRetries) throw err;
+      await sleep(Math.min(1000 * 2 ** retries, 15_000));
+      const state = await queryOffset();
+      if (typeof state !== "number") {
+        report(total);
+        return state; // اكتمل أصلاً
+      }
+      offset = state;
+    }
+  }
+  throw new Error("انتهى الرفع دون استجابة نهائية من Drive");
+}
+
+
+/* ───────────────────────── سرد / تنزيل / مجلدات ───────────────────────── */
+
+interface CommonOpts {
+  auth: DriveAuth;
+  fetch?: FetchLike;
+  signal?: AbortSignal;
+}
+
+async function driveJson<T>(url: string, init: RequestInit, o: CommonOpts): Promise<T> {
+  const f = o.fetch ?? fetch;
+  const res = await f(url, {
+    ...init,
+    headers: { Authorization: `Bearer ${await o.auth.getAccessToken()}`, ...(init.headers as object) },
+    signal: o.signal,
+  });
+  if (!res.ok) throw new Error(`Drive ${res.status}: ${await res.text()}`);
+  return res.json();
+}
+
+/** يسرد ملفات مجلد (غير المحذوفة) مع appProperties لقراءة البصمات دون تنزيل */
+export async function listFolder(opts: CommonOpts & { folder: string }): Promise<DriveFile[]> {
+  const id = extractDriveId(opts.folder);
+  const out: DriveFile[] = [];
+  let pageToken = "";
+  do {
+    const q = encodeURIComponent(`'${id}' in parents and trashed=false`);
+    const url =
+      `https://www.googleapis.com/drive/v3/files?q=${q}&pageSize=1000&supportsAllDrives=true&includeItemsFromAllDrives=true` +
+      `&fields=nextPageToken,files(${FILE_FIELDS})` +
+      (pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : "");
+    const j = await driveJson<{ files: DriveFile[]; nextPageToken?: string }>(url, {}, opts);
+    out.push(...j.files);
+    pageToken = j.nextPageToken ?? "";
+  } while (pageToken);
+  return out;
+}
+
+/** بيانات ملف واحد (للتحقق من R قبل الرفع مباشرة) */
+export function getFileMeta(opts: CommonOpts & { fileId: string }): Promise<DriveFile> {
+  return driveJson<DriveFile>(
+    `https://www.googleapis.com/drive/v3/files/${opts.fileId}?supportsAllDrives=true&fields=${FILE_FIELDS}`,
+    {},
+    opts
+  );
+}
+
+/** ينشئ مجلداً (داخل parent اختيارياً) */
+export function createFolder(opts: CommonOpts & { name: string; parent?: string }): Promise<DriveFile> {
+  return driveJson<DriveFile>(
+    `https://www.googleapis.com/drive/v3/files?supportsAllDrives=true&fields=${FILE_FIELDS}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: opts.name,
+        mimeType: "application/vnd.google-apps.folder",
+        ...(opts.parent ? { parents: [extractDriveId(opts.parent)] } : {}),
+      }),
+    },
+    opts
+  );
+}
+
+/** يبحث عن مجلد بالاسم (ضمن ما يراه التطبيق) وينشئه إن لم يوجد */
+export async function ensureFolder(opts: CommonOpts & { name: string; parent?: string }): Promise<DriveFile> {
+  const esc = opts.name.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+  let query = `name='${esc}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+  if (opts.parent) query += ` and '${extractDriveId(opts.parent)}' in parents`;
+  const j = await driveJson<{ files: DriveFile[] }>(
+    `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&pageSize=1&supportsAllDrives=true&includeItemsFromAllDrives=true&fields=files(${FILE_FIELDS})`,
+    {},
+    opts
+  );
+  return j.files[0] ?? createFolder(opts);
+}
+
+/**
+ * ينزّل محتوى ملف كـ Blob مع تقدم.
+ * تنبيه: يحمّل كل المحتوى في الذاكرة. للملفات الكبيرة على أندرويد انقل التنزيل إلى Rust.
+ */
+export async function downloadFile(
+  opts: CommonOpts & {
+    fileId: string;
+    maxBytes?: number; // حارس حجم
+    onProgress?: (p: { downloaded: number; total: number; percent: number }) => void;
+  }
+): Promise<Blob> {
+  const f = opts.fetch ?? fetch;
+  const res = await f(`https://www.googleapis.com/drive/v3/files/${opts.fileId}?alt=media&supportsAllDrives=true`, {
+    headers: { Authorization: `Bearer ${await opts.auth.getAccessToken()}` },
+    signal: opts.signal,
+  });
+  if (!res.ok) throw new Error(`فشل التنزيل: ${res.status} ${await res.text()}`);
+
+  const total = Number(res.headers.get("Content-Length") ?? 0);
+  if (opts.maxBytes && total > opts.maxBytes) {
+    throw new Error(`الملف (${total} بايت) أكبر من الحد المسموح (${opts.maxBytes})`);
+  }
+  if (!res.body) return res.blob();
+
+  const reader = res.body.getReader();
+  const parts: Uint8Array[] = [];
+  let downloaded = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    parts.push(value);
+    downloaded += value.length;
+    if (opts.maxBytes && downloaded > opts.maxBytes) {
+      await reader.cancel();
+      throw new Error("تجاوز التنزيل الحد المسموح");
+    }
+    opts.onProgress?.({ downloaded, total, percent: total ? Math.round((downloaded / total) * 100) : 0 });
+  }
+  return new Blob(parts as BlobPart[]);
+}

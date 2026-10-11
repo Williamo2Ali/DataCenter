@@ -1,0 +1,289 @@
+/* ————— وضع نقل البيانات: عمود واحد ضيق، كل حقل في صف، مناسب للنسخ/اللصق فوق النوافذ ————— */
+/* الهيدر: إخفاء كل شيء باستثناء أزرار النافذة (تصغير/تكبير/تثبيت/إغلاق) وزر الوضع */
+body.is-data-mode .page-content { width: 100%; max-width: none; margin: 0; padding: 6px 6px 10px; }
+body.is-data-mode .records-section { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+body.is-data-mode .member-tabs { position: static; max-height: none; overflow: visible; flex-direction: row; overflow-x: auto; gap: 6px; padding: 2px 2px 6px; }
+body.is-data-mode .member-tab { flex: 0 0 auto; min-height: 0; padding: 8px 10px; gap: 8px; }
+body.is-data-mode .tab-index { padding-top: 0; }
+body.is-data-mode .tab-relation { display: none; }
+body.is-data-mode .member-tab.is-active .tab-relation { display: none; }
+body.is-data-mode .record-panel { border-radius: 6px; }
+body.is-data-mode .rtc { min-height: 0; padding: 12px 14px; gap: 10px; }
+body.is-data-mode .rtc-title { font-size: 1rem; }
+body.is-data-mode button.rtc-title { font-size: 1rem !important; }
+body.is-data-mode .rtc-sub { font-size: 0.6875rem; }
+body.is-data-mode .rtc-kicker { display: none; }
+body.is-data-mode .record-kicker { display: none; }
+body.is-data-mode .fields-grid { grid-template-columns: minmax(0, 1fr); padding: 10px 10px 4px; column-gap: 0; }
+body.is-data-mode .field-row { padding-bottom: 9px; }
+body.is-data-mode .field-value { height: 38px; }
+body.is-data-mode .record-footer { min-height: 34px; padding: 0 14px; font-size: 0.625rem; }
+body.is-data-mode .accounts-section { grid-column: 1; padding: 12px 10px 10px; }
+body.is-data-mode .accounts-grid { grid-template-columns: minmax(0, 1fr); }
+body.is-data-mode .account-fields { grid-template-columns: minmax(0, 1fr); }
+body.is-data-mode .page-footer { display: none; }
+
+.accounts-section { grid-column: 2; min-width: 0; padding: 17px 18px 12px; background: #fff; border: 1px solid #e1e7e2; border-radius: 6px; }
+.accounts-heading { min-height: 42px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+.accounts-heading .record-kicker { margin-bottom: 2px; }
+.accounts-heading h3 { margin: 0; color: #2e413c; font-size: 1rem; font-weight: 600; }
+.accounts-count { color: #71867b; font: 0.6875rem 'DM Mono', monospace; }
+.accounts-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.accounts-grid > .record-kicker { grid-column: 1 / -1; margin: 0; }
+/* تباعد دائم بين مجموعتي البطاقات (ايميلات/اشتراكات) وبعد صف أزرار الإضافة. */
+.accounts-grid + .accounts-grid { margin-top: 10px; }
+/* صف أزرار الإضافة بعرض البطاقات تماماً (بلا تضييق 92% الموروث). */
+.accounts-section > .viewer-actions-col { width: 100%; margin: 0 0 15px; }
+/* صف أنواع الملفات: أزرار الباسبورت (add-field-btn) في صف واحد متساوٍ. */
+.file-kind-row { flex-wrap: nowrap; }
+.file-kind-row .add-field-btn { flex: 1 1 0; min-width: 0; }
+/* صف أنواع الملفات ملاصق لما فوقه وتحته (كالمسافة بينه وبين البحث). */
+.record-panel > .document-library > .file-kind-col { width: 100%; margin: 0; }
+/* الصف الثاني لترشيح الملفات: شبكة 5 أعمدة بالفجوة نفسها (8px) —
+   مضغوطة وصوت كل منهما عمود واحد (بعرض زر الكل في الصف الأول تماماً)،
+   وزر الامتداد يملأ الباقي (3 أعمدة). */
+.file-sub-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.file-sub-row .add-field-btn { margin: 0; min-width: 0; white-space: nowrap; }
+.file-sub-row .add-field-btn > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.file-sub-row .span-3 { grid-column: span 3; }
+/* زر الامتداد محدد دائماً بالأخضر (كأزرار النوع النشطة). */
+.file-sub-row .add-field-btn.is-active {
+  color: #fff;
+  background: var(--green);
+  border-color: var(--green);
+  border-style: solid;
+  font-weight: 600;
+}
+.file-sub-row .add-field-btn.is-active:hover:not(:disabled) {
+  color: #fff;
+  background: var(--green);
+  border-color: var(--green);
+}
+:root[data-theme='dark'] .file-sub-row .add-field-btn.is-active {
+  color: #14241b;
+  background: #8cc5a4;
+  border-color: #8cc5a4;
+}
+:root[data-theme='dark'] .file-sub-row .add-field-btn.is-active:hover:not(:disabled) {
+  color: #14241b;
+  background: #8cc5a4;
+  border-color: #8cc5a4;
+}
+/* صف زرّي تحديد/حفظ الملفات بعرض المكونات الأخرى وملاصق للصف التالي (كالمسافة بين الأنواع والبحث). */
+.record-panel > .document-library > .file-actions-col { width: 100%; margin: 0; }
+/* رسالة فراغ الملفات مضغوطة بلا تكبير للمساحة. */
+.record-panel > .document-library > .vault-empty { padding: 1px 10px 6px; }
+/* كاردا القسم (المحفوظة والمؤقتة): شقيقتا اللوحة بامتداد الصف كاملاً ومنفصلتان عنها. */
+.records-section > .file-section-card { grid-column: 1 / -1; min-width: 0; padding: 12px; background: #fff; border: 1px solid #e1e7e2; border-radius: 6px; }
+/* زر عرض المزيد نهاية الكارد: بملء الصف متمركزاً — بلا هوامش جانبية تُخرجه عن الحاوية. */
+.file-section-card > .add-field-btn { margin: 10px 0 0; width: 100%; }
+/* صفحة معاينة الملف: محتوى مباشر بلا كارد داخلية — تُخفى مكتبة PDF الجانبية
+   وتذييلات الحالة، ويُجرَّد إطار العارض (شريط أدوات PDF يبقى للتنقل بين
+   الصفحات، وعنوانا الصور/الفيديو المكرران يُخفَيان — العنوان في شريط الصفحة). */
+.file-preview-page .document-library { min-height: 0; display: block; animation: none; }
+.file-preview-page .documents-sidebar,
+.file-preview-page .pdf-viewer-footer { display: none; }
+.file-preview-page .pdf-viewer { background: none; border: 0; position: relative; }
+.file-preview-page .pdf-viewer-header { background: none; border: 0; padding-inline: 0; }
+.file-preview-page .preview-kind-image .pdf-viewer-header,
+.file-preview-page .preview-kind-video .pdf-viewer-header { display: none; }
+/* في المعاينة: الكانفس المكبَّر يتجاوز العرض بحرية — سكرول أفقي داخل الإطار، وملء العرض يبقى عند التكبير 1. */
+.file-preview-page .pdf-canvas-frame { min-height: 0; border: 0; background: none; padding: 0; justify-content: flex-start; }
+.file-preview-page .pdf-canvas-stage { min-height: 0; }
+/* صفحات PDF عارية بملء العرض في المعاينة: بلا الصندوق الرمادي الداخلي ولا حشوته — ظل خفيف فقط للفصل. */
+.file-preview-page .pdf-scroll-page { width: max-content; max-width: none; margin: 0 auto 12px; padding: 0; background: none; border: 0; }
+.file-preview-page .pdf-scroll-page-body { min-width: 0; min-height: 0; background: none; }
+.file-preview-page .pdf-canvas { max-width: none; box-shadow: 0 2px 10px #25392f22; }
+/* شريط صفحة المعاينة: رجوع + عنوان + أزرار (الديسكتوب — الموبايل في الهيدر). */
+.file-preview-page .preview-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.file-preview-page .preview-content { min-width: 0; }
+/* مجموعة التنقل بين الصفحات: كتلة واحدة بحد أعلى 40% من الصف (تتقلص مع المحتوى فلا قصّ ولا فيض). */
+.file-preview-page .pdf-page-controls { flex: 0 1 auto; max-width: 40%; min-width: 0; }
+/* شريط مصغرات الصور: ثابت أسفل الشاشة عبر portal (بديل الشريط السفلي). */
+.thumb-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px 12px;
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+  scrollbar-width: thin;
+}
+.thumb-strip-fixed {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 900;
+  margin: 0;
+  border-radius: 0;
+}
+.thumb-item {
+  position: relative;
+  flex: none;
+  width: 72px;
+  height: 72px;
+  padding: 0;
+  overflow: hidden;
+  background: var(--paper);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+}
+/* شارة التشغيل فوق مصغرات الفيديو — تُعرَف كفيديو حتى قبل تحميل الإطار. */
+.thumb-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(20, 32, 28, 0.55);
+  color: #fff;
+  pointer-events: none;
+}
+.thumb-item img, .thumb-item video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.thumb-item.is-active { border-color: var(--green); }
+.thumb-fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--muted);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+/* أزرار المؤقتة: أقصر قليلاً (32px) — حفظ/حذف 32% والتصنيف 36%. */
+.file-section-card .modal-btn { min-height: 32px; min-width: 0; flex: 1 1 0; }
+.file-section-card .modal-btn.staging-cat { flex-grow: 1.125; }
+/* أيقونات أزرار المؤقتة بحجم أزرار التطبيق (16px) بلا انكماش مرن. */
+.file-section-card .modal-btn svg.lucide { flex: none; width: 16px !important; height: 16px !important; }
+/* أيقونة الملف في الكارد المؤقتة صفراء (الأيقونة فقط لا الخلفية). */
+.file-section-card .account-title .staged-avatar svg { color: #eab308; }
+.file-kind-row .add-field-btn.is-active {
+  color: #fff;
+  background: var(--green);
+  border-color: var(--green);
+  border-style: solid;
+  font-weight: 600;
+}
+/* تثبيت النشطة عند المرور: قاعدة hover العامة أخف (13-editor) فتُظهر أبيض على فاتح. */
+.file-kind-row .add-field-btn.is-active:hover:not(:disabled) {
+  color: #fff;
+  background: var(--green);
+  border-color: var(--green);
+}
+:root[data-theme='dark'] .file-kind-row .add-field-btn.is-active {
+  color: #14241b;
+  background: #8cc5a4;
+  border-color: #8cc5a4;
+}
+:root[data-theme='dark'] .file-kind-row .add-field-btn.is-active:hover:not(:disabled) {
+  color: #14241b;
+  background: #8cc5a4;
+  border-color: #8cc5a4;
+}
+/* جسم الملفات داخل البطاقة: عمود مرن (يلغي شبكة المكتبة القديمة 270px/min-height)
+   مع حشوة حول الفلاتر والشبكة (الهيدر بحشوته الخاصة). */
+.record-panel > .document-library { min-height: 0; display: flex; flex-direction: column; padding: 10px 18px 12px; }
+/* صندوق نص المعاينة ثابت كإطار PDF: عرض 95% وارتفاع 95% من المساحة الباقية
+   بعد الهيدر والشريط السفلي (يحترم مساحتهما ولا ينزل تحتهما) —
+   لا يتمدد بطول النص ولا يتغير بحجم الخط (التمرير داخلي فقط). */
+.file-preview-page .preview-kind-text .text-viewer pre {
+  width: 95%;
+  margin-inline: auto;
+  height: calc((100dvh - 220px) * 0.95);
+  min-height: 180px;
+}
+/* تبويبات الملفات المعطلة (أثناء خيار الكل) — باهتة بلا تفاعل. */
+.member-tab:disabled { opacity: 0.55; cursor: not-allowed; }
+/* المحرر المضمن بعرض صف الحفظ/الإلغاء تماماً (بلا تضييق 92% الموروث). */
+.accounts-section > .field-form { width: 100%; margin: 0; }
+/* شارة نوع الحساب في ترويسة البطاقة — تتبع الفاتح/الداكن. */
+.account-kind {
+  flex: 0 0 auto;
+  padding: 2px 8px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--green);
+  background: color-mix(in srgb, var(--green) 10%, var(--paper));
+  border: 1px solid color-mix(in srgb, var(--green) 30%, transparent);
+  border-radius: 999px;
+}
+.account-kind.is-site {
+  color: var(--green);
+  background: color-mix(in srgb, var(--green) 8%, var(--paper));
+  border-color: color-mix(in srgb, var(--green) 30%, transparent);
+}
+:root[data-theme='dark'] .account-kind.is-site { color: var(--green); }
+.account-card { min-width: 0; padding: 12px; background: #f8faf8; border: 1px solid #e8ede9; border-radius: 4px; }
+.account-title { margin: 0; display: flex; align-items: center; gap: 7px; color: #40534c; font-size: 0.8125rem; font-weight: 600; }
+.account-title svg { flex: 0 0 auto; color: var(--green); }
+.account-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px 12px; margin-top: 10px; }
+.account-field { min-width: 0; }
+.account-field-label { display: block; overflow: hidden; margin-bottom: 4px; color: #7b8983; font-size: 0.625rem; text-overflow: ellipsis; white-space: nowrap; }
+.account-field-control { position: relative; display: flex; align-items: center; }
+.account-field-value { width: 100%; height: 34px; min-width: 0; padding: 0 8px 0 36px; color: #2d4239; background: #fff; border: 1px solid #e1e7e2; border-radius: 3px; font: var(--app-input-font-size, 0.6875rem) 'DM Mono', sans-serif; }
+.account-action { position: absolute; inset-inline-start: 3px; width: 25px; height: 26px; display: grid; place-items: center; color: #75857d; background: transparent; border: 0; border-radius: 3px; cursor: pointer; }
+.account-action + .account-action { inset-inline-start: 29px; }
+/* أزرار الكارد داخل ReadonlyInput: في التدفق الطبيعي يسار الحقل (لا absolute —
+   مرجعها القديم زال بالهجرة فكانت تخرج خارج الكارد)، والحشوة اليسرى تحجز لها. */
+.account-title .account-action, .account-field-control .account-action { position: static; flex: 0 0 auto; }
+.account-field-control .field-actions { top: 4px; }
+/* حقل كلمة المرور بزرّين (إظهار + نسخ) يحتاج حشوة أوسع. */
+.account-field-control:has(.field-actions > *:nth-child(2)) .account-field-value { padding-left: 62px; }
+/* أزرار ترويسة بطاقة الحساب أكبر بقليل (تتجاوز القياس العام داخل الأزرار). */
+.account-title .account-action svg.lucide { width: 18px !important; height: 18px !important; }
+.account-action:hover { color: var(--green); background: #edf4ef; }
+.account-action.is-copied { color: #fff; background: var(--green); }
+.account-action:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }
+.accounts-empty { margin: 0; color: #84908d; font-size: 0.75rem; }
+.accounts-feedback { margin: 12px 0 0; color: #809088; font-size: 0.6875rem; }
+.accounts-feedback.has-error { color: #b45b4b; }
+
+@keyframes reveal { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 760px) {
+  .page-content { width: 95%; margin-inline: auto; }
+  /* أثناء معاينة ملف: المحتوى بملء الشاشة (للكارد حشوته الصفرية الخاصة). */
+  body.is-file-preview .page-content { width: 100%; }
+  .page-heading { min-height: 184px; padding-block: 30px 25px; }
+  h1 { font-size: 1.6875rem; }
+  .heading-description { max-width: 350px; font-size: 0.8125rem; }
+  .heading-stamp { width: 78px; height: 78px; margin-inline-end: 0; }
+  .heading-stamp svg { width: 22px; }
+  .records-section { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .member-tabs { position: static; max-height: none; overflow: visible; flex-direction: row; overflow-x: auto; gap: 7px; padding: 2px 2px 6px; scrollbar-width: thin; }
+  .member-tab { flex: 0 0 190px; min-height: 64px; padding: 9px 11px; }
+  .rtc { min-height: 0; padding: 19px 20px; }
+  .fields-grid { padding: 19px 19px 13px; column-gap: 15px; }
+  .record-footer { padding-inline: 19px; }
+  .accounts-grid { grid-template-columns: minmax(0, 1fr); }
+  .account-fields { grid-template-columns: minmax(0, 1fr); }
+  .accounts-section { grid-column: 1; padding-inline: 13px; }
+}
+
+@media (max-width: 480px) {
+  .page-content { width: 95%; margin-inline: auto; }
+  .page-heading { min-height: 161px; }
+  h1 { font-size: 1.5rem; }
+  .heading-description { max-width: 245px; font-size: 0.75rem; line-height: 1.8; }
+  .heading-stamp { width: 65px; height: 65px; flex-shrink: 0; }
+  .heading-stamp span { font-size: 0.375rem; }
+  .fields-grid { grid-template-columns: minmax(0, 1fr); padding: 18px 16px 10px; }
+  .field-row { padding-bottom: 12px; }
+  .rtc { padding-inline: 17px; }
+  .rtc-title { font-size: 1.125rem; }
+  button.rtc-title { font-size: 1.125rem !important; }
+  .record-footer { padding-inline: 16px; font-size: 0.625rem; }
+  .page-footer { min-height: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+}
+

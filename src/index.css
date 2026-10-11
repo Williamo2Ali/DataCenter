@@ -1,0 +1,19 @@
+/* Component styles are split into src/style/*.css - order matters, keep imports in this sequence.
+   Fonts are self-hosted (15-local-fonts.css) - no network needed. */
+@import './style/15-local-fonts.css';
+@import './style/01-tokens-base.css';
+@import './style/02-repo-header.css';
+@import './style/03-data-mode.css';
+@import './style/04-documents.css';
+@import './style/05-stamp-responsive.css';
+@import './style/06-theme-dark.css';
+@import './style/07-vault.css';
+@import './style/08-modals.css';
+@import './style/09-dashboard.css';
+@import './style/10-header-mobile.css';
+@import './style/11-profile.css';
+@import './style/12-layout-margins.css';
+@import './style/13-editor.css';
+@import './style/14-account-misc.css';
+/* آخر ملف: كتلة هيدر عارض الملفات الموحّدة على الموبايل (يجب أن تبقى الأخيرة). */
+@import './style/16-pdf-viewer-header-mobile.css';

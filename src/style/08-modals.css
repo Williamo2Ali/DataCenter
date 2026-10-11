@@ -1,0 +1,254 @@
+/* ————— المودال (Modal) ————— */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 30, 28, 0.4);
+  padding: 20px;
+  animation: modal-fade-in 200ms ease both;
+}
+/* مودال منتقي مزود الإيميل: حشوة الغلاف 5vw فيظهر الكارد بعرض 90% من الشاشة،
+   والداخلي بعرض 95% من الكارد — ليتسع عمودا المزودين دون قصّ. */
+.modal-overlay-wide { padding: 5vw; }
+.modal-card-wide { max-width: 560px; }
+.modal-card-wide .modal-body { padding-inline: 2.5%; }
+.modal-card {
+  width: 100%;
+  max-width: 420px;  max-height: calc(100dvh - 40px);
+  display: flex;
+  flex-direction: column;
+  background: var(--paper, #fff);
+  border: 1px solid var(--line, #e2e7e3);
+  border-radius: 10px;
+  box-shadow: 0 20px 48px #1d343024;
+  overflow: hidden;
+  animation: modal-slide-up 280ms cubic-bezier(0.22, 0.68, 0.32, 1) both;
+}
+/* مودال تصنيفات الملفات: سقف 60% من ارتفاع الشاشة — الزائد سكرول داخلي. */
+.modal-card.file-category-modal { max-height: 60dvh; }
+/* مودال نوع النص: سقف 70% من ارتفاع الشاشة — الزائد سكرول داخلي. */
+.modal-card.text-kind-modal { max-height: 70dvh; }
+/* مودال إنشاء مستودع: سقف 75% من ارتفاع الشاشة ولا يكبر أبداً — الزائد سكرول عمودي داخلي. */
+.modal-card.create-repo-modal { max-height: 75dvh; }
+/* عين كلمة المرور في المودال: يسار-وسط عمودياً (لا أسفل). */
+.modal-card .vault-pass-row .account-action { top: 50%; transform: translateY(-50%); }
+@keyframes modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modal-slide-up { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line, #e2e7e3);
+}
+.modal-header h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+.modal-close {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  color: #748184;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+.modal-close:hover:not(:disabled) { color: #c8443c; background: #fbeae8; border-color: #f1d5d0; }
+.modal-close:disabled { opacity: 0.5; cursor: not-allowed; }
+.modal-close:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+.modal-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; min-height: 0; overflow-y: auto; scrollbar-width: thin; }
+.modal-footer { flex: 0 0 auto; }
+.modal-label svg { vertical-align: -2px; margin-inline-end: 4px; }
+.modal-stepper {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px;
+  background: #f8faf8;
+  border: 1px solid #e8ede9;
+  border-radius: 8px;
+}
+.modal-stepper-btn {
+  width: 40px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: var(--green);
+  background: #fff;
+  border: 1px solid #dfe6e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+.modal-stepper-btn:hover:not(:disabled) { border-color: #76a68c; background: #f7faf7; }
+.modal-stepper-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.modal-stepper-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }
+.modal-stepper-value {
+  flex: 1;
+  color: #2e413c;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+}
+.modal-members { display: flex; flex-direction: column; gap: 12px; animation: repo-card-in 260ms ease both; }
+:root[data-theme='dark'] .modal-stepper { background: #242428; border-color: #3b3b41; }
+:root[data-theme='dark'] .modal-stepper-btn { color: #a5d4b9; background: #29292d; border-color: #404046; }
+:root[data-theme='dark'] .modal-stepper-value { color: #e4e4e8; }
+.modal-error { margin: 0; padding: 10px 12px; color: #ab5146; background: #fdf3f1; border: 1px solid #edd3cc; border-radius: 4px; font-size: 0.8125rem; }
+/* نص رسالة مودال الرسائل العام — بلون الحبر (يتبع الفاتح/الداكن). */
+.modal-message { margin: 0; color: var(--ink); font-size: 0.9375rem; font-weight: 600; line-height: 1.7; }
+.modal-field { display: flex; flex-direction: column; gap: 6px; }
+.modal-label { color: #344542; font-size: 0.8125rem; font-weight: 500; }
+.modal-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  color: #24393c;
+  background: #fff;
+  border: 1px solid #dfe6e0;
+  border-radius: 6px;
+  font-size: var(--app-input-font-size, 0.9375rem);
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.modal-input:focus { border-color: #71a994; box-shadow: 0 0 0 3px #16715f1a; }
+.modal-input:disabled { opacity: 0.6; cursor: not-allowed; }
+.modal-hint { margin: 0; color: #84908d; font-size: 0.6875rem; }
+
+/* إعدادا الأزرار: حجم النص وحجم الأيقونات — سيطرة عامة مقصودة (!important)
+   فوق كل الأحجام المدمجة في الأصناف وأدوات Tailwind. الأيقونات خارج الأزرار لا تُمس. */
+button { font-size: var(--app-button-font-size, 14px) !important; }
+button svg.lucide { width: var(--app-button-icon-size, 16px) !important; height: var(--app-button-icon-size, 16px) !important; }
+/* الهيدران خارج السيطرة — أيقوناتهما ثابتة بأحجامها المدمجة. */
+.no-icon-scale button svg.lucide { width: auto !important; height: auto !important; }
+/* حقل تحرير بزر مسح: زر X داخل الحقل يظهر أثناء التحرير فقط (تركيز + قيمة). */
+.cleartext-wrap { position: relative; display: block; width: 100%; min-width: 0; flex: 1 1 auto; }
+.cleartext-wrap > input, .cleartext-wrap > textarea { width: 100%; text-align: start; }
+.cleartext-wrap.has-value > input, .cleartext-wrap.has-value > textarea { padding-inline-end: 32px; }
+/* الزر دائماً في نهاية السطر المنطقية (نهاية اتجاه المحتوى) — الغلاف
+   يحمل نفس dir المحسوم للحقل فيتطابقان تلقائياً (يمين في LTR ويسار في RTL). */
+/* حشوة field-value الفيزيائية (43px يساراً) تُحيَّد داخل هذا المكون حتى
+   لا تظهر فراغاً كاذباً في جهة البداية عندما يكون المحتوى LTR. */
+.cleartext-wrap > input.field-value { padding-left: 12px; padding-right: 12px; }
+.cleartext-wrap.has-value > input.field-value { padding-inline-start: 12px; padding-inline-end: 32px; }
+/* حاوية أزرار الحقل (endAction + زر المسح): مثبتة في نهاية السطر المنطقية،
+   والترتيب داخلها ثابت (X على الطرف) فيستحيل تداخل الزرين — الظاهر منهما
+   فقط يتبدل (X مع وجود قيمة، والإضافي دائماً). */
+.cleartext-wrap.has-action > input, .cleartext-wrap.has-action > textarea { padding-inline-end: 62px; }
+.cleartext-actions { position: absolute; inset-inline-end: 6px; top: 50%; translate: 0 -50%; display: flex; align-items: center; gap: 4px; }
+.cleartext-actions.is-top { top: 8px; translate: 0 0; }
+.cleartext-action { display: grid; place-items: center; width: 24px; height: 24px; }
+.cleartext-action button {
+  width: 24px; height: 24px; display: grid; place-items: center; padding: 0;
+  color: #84908c; background: #eef3ee; border: 0; border-radius: 999px; cursor: pointer;
+}
+.cleartext-action button:hover:not(:disabled) { color: #fff; background: var(--green); }
+.cleartext-action button:disabled { opacity: 0.5; cursor: not-allowed; }
+:root[data-theme='dark'] .cleartext-action button { color: #b0b0b6; background: #303035; }
+:root[data-theme='dark'] .cleartext-action button:hover:not(:disabled) { color: #fff; background: var(--green); }
+.cleartext-x {
+  display: grid; place-items: center; width: 24px; height: 24px; padding: 0;
+  color: #84908c; background: #eef3ee; border: 0; border-radius: 999px; cursor: pointer;
+}
+.cleartext-x:hover { color: #fff; background: #ab5146; }
+:root[data-theme='dark'] .cleartext-x { color: #b0b0b6; background: #303035; }
+:root[data-theme='dark'] .cleartext-x:hover { color: #fff; background: #ab5146; }
+/* إخفاء زر المسح الأصلي للمتصفح في حقول البحث — زر X الخاص بالمكون هو الوحيد. */
+.cleartext-wrap > input[type='search']::-webkit-search-cancel-button,
+.cleartext-wrap > input[type='search']::-webkit-search-decoration { display: none; -webkit-appearance: none; }
+.cleartext-wrap > input[type='search'] { -webkit-appearance: textfield; appearance: textfield; }
+/* حقل البحث المضمّن (TextSearch): أبيض بلا تركيز على الزر، والزر بداية
+   السطر المنطقية (جهة النص) — نفس وصفة cleartext بخصائص منطقية. */
+.textsearch-wrap { position: relative; display: block; width: 100%; min-width: 0; }
+.textsearch-input {
+  width: 100%; height: 42px; padding: 0 12px;
+  border-radius: 6px; border: 1px solid var(--line); background: var(--paper);
+  color: var(--ink); font-size: var(--app-input-font-size, 0.9375rem); outline: none;
+}
+.textsearch-btn {
+  position: absolute; inset-inline-end: 5px; top: 50%; translate: 0 -50%;
+  display: grid; place-items: center; width: 28px; height: 28px; padding: 0;
+  color: var(--muted); background: var(--paper); border: 0; border-radius: 6px; cursor: pointer;
+}
+
+/* حقل قراءة فقط بزرّين متراكبين داخله يساراً (نسخ/تعديل أو إظهار/نسخ). */
+.ro-wrap { position: relative; display: block; width: 100%; min-width: 0; flex: 1 1 auto; }
+.ro-wrap > input { width: 100%; }
+.field-actions { position: absolute; top: 5px; left: 5px; display: flex; gap: 2px; }
+/* لون التحديد داخل مكونات الإدخال الجديدة — أخضر فاتح من الثيم ونص داكن (لا زر). */
+.cleartext-wrap input::selection, .cleartext-wrap textarea::selection,
+.ro-wrap input::selection { background: var(--selection); color: #000; }
+/* كارد التحرير: خلفية الحقل بيضاء دائماً (لا لون اللوحة)، والإكمال التلقائي
+   يبقى أبيضاً بلا الأزرق الدخيل — مع مقابل داكن للوضع الليلي. */
+.field-row.is-editing .cleartext-wrap > input.field-value { background: #fff; }
+.field-row.is-editing .cleartext-wrap > input.field-value:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 100px #fff inset;
+  -webkit-text-fill-color: #24393c;
+  caret-color: #24393c;
+}
+:root[data-theme='dark'] .field-row.is-editing .cleartext-wrap > input.field-value { background: #252529; }
+:root[data-theme='dark'] .field-row.is-editing .cleartext-wrap > input.field-value:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 100px #252529 inset;
+  -webkit-text-fill-color: #e6e6ea;
+  caret-color: #e6e6ea;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--line, #e2e7e3);
+  background: #fafbf9;
+}
+.modal-btn {
+  min-height: 38px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+.modal-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.modal-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.modal-btn-primary { color: #fff; background: var(--green); border: 1px solid var(--green); }
+.modal-btn-primary:hover:not(:disabled) { background: #105b4d; border-color: #105b4d; }
+.modal-btn-danger { color: #fff; background: #c8443c; border: 1px solid #c8443c; }
+.modal-btn-danger:hover:not(:disabled) { background: #a9362f; border-color: #a9362f; }
+.modal-btn-secondary { color: #344741; background: #fff; border: 1px solid #dfe6e0; }
+.modal-btn-secondary:hover:not(:disabled) { color: var(--green); border-color: #76a68c; background: #f7faf7; box-shadow: 0 0 0 2px #16715f24; }
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+:root[data-theme='dark'] .modal-overlay { background: rgba(0, 0, 0, 0.5); }
+:root[data-theme='dark'] .modal-card { background: var(--paper); border-color: #3b3b41; box-shadow: 0 20px 48px rgba(0,0,0,0.4); }
+:root[data-theme='dark'] .modal-header { border-color: #3b3b41; }
+:root[data-theme='dark'] .modal-close { color: #b0b0b6; }
+:root[data-theme='dark'] .modal-close:hover:not(:disabled) { color: #e88d86; background: #3a2a28; border-color: #5a3632; }
+:root[data-theme='dark'] .modal-error { color: #e8a09a; background: #2b2120; border-color: #5a3632; }
+:root[data-theme='dark'] .modal-label { color: #e4e4e8; }
+:root[data-theme='dark'] .modal-input { color: #e6e6ea; background: #252529; border-color: #404046; }
+:root[data-theme='dark'] .modal-input:focus { border-color: #8cc5a4; box-shadow: 0 0 0 3px #8cc5a433; }
+:root[data-theme='dark'] .modal-hint { color: #b0b0b6; }
+:root[data-theme='dark'] .modal-footer { border-color: #3b3b41; background: #242428; }
+:root[data-theme='dark'] .modal-btn-secondary { color: #d7d7db; background: #29292d; border-color: #404046; }
+:root[data-theme='dark'] .modal-btn-secondary:hover:not(:disabled) { color: #a5d4b9; border-color: #8cc5a4; background: #303035; box-shadow: 0 0 0 2px #8cc5a433; }
+

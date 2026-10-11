@@ -1,0 +1,55 @@
+/* ————— الهيدر الموحد لتبويبات المستودعات (RepoTabsHeaderControl) —————
+   نفس التنسيق لكل التبويبات (الافتراضية والمخصصة) وعلى كل الشاشات:
+   نصوص مقصوصة بـ ellipsis بلا التفاف، وعدّاد الحقول بعرض زرّين وارتفاع زر واحد. */
+.rtc { min-height: 113px; padding: 22px 26px; display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #fff; background: var(--ink); }
+.rtc-texts { min-width: 0; flex: 1 1 auto; }
+.rtc-texts > * { overflow: hidden; margin: 0; text-overflow: ellipsis; white-space: nowrap; }
+.rtc-kicker { margin-bottom: 5px; color: #8ec3ae; font-size: 0.625rem; }
+.rtc-title { margin-bottom: 2px; font-size: 1.25rem; font-weight: 600; }
+/* العنوان زراً (الوضع المتعدد): نفس هيئة h2 — يتجاوز مقاس الأزرار العام. */
+button.rtc-title { width: 100%; padding: 0; display: block; background: none; border: 0; cursor: pointer; text-align: start; font-size: 1.25rem !important; }
+button.rtc-title:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.rtc-sub { color: #aab9b4; font-size: 0.75rem; }
+.rtc-side { flex: 0 0 auto; display: grid; grid-template-columns: repeat(2, 40px); grid-auto-rows: 40px; gap: 6px; }
+.rtc-count { grid-column: span 2; display: flex; align-items: center; justify-content: center; overflow: hidden; color: #c0d2ca; border: 1px solid #61746d; border-radius: 4px; font-size: 0.625rem; white-space: nowrap; }
+.rtc-count span { overflow: hidden; color: #8ec3ae; font: 0.75rem 'DM Mono', monospace; text-overflow: ellipsis; white-space: nowrap; }
+.rtc-btn { width: 100%; height: 100%; display: grid; place-items: center; color: #c0d2ca; background: transparent; border: 1px solid #61746d; border-radius: 4px; cursor: pointer; transition: color 150ms ease, background 150ms ease; }
+.rtc-btn:hover:not(:disabled) { color: #fff; background: #ffffff22; }
+.rtc-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.rtc-btn.danger:hover:not(:disabled) { color: #fff; background: #c8443c; }
+.rtc-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+/* زر i الصغير بجانب عنوان الهيدر (وضع متعدد) — بنفس لغة أزرار الهيدر. */
+.rtc-info-btn { width: 24px; height: 24px; flex: none; display: grid; place-items: center; color: #c0d2ca; background: transparent; border: 0; border-radius: 4px; cursor: pointer; }
+.rtc-info-btn:hover { color: #fff; background: #ffffff22; }
+.rtc-info-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.fields-grid { padding: 22px 25px 18px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 21px; }
+.field-row { min-width: 0; padding: 0 0 13px; }
+.field-label { display: block; overflow: hidden; margin: 0 1px 6px; color: #778381; font-size: 0.6875rem; text-overflow: ellipsis; white-space: nowrap; }
+.field-control { position: relative; }
+.field-value { width: 100%; height: 42px; padding: 0 12px 0 43px; color: #24393c; background: #f6f8f6; border: 1px solid #e6ebe7; border-radius: 4px; outline: none; font: var(--app-input-font-size, 0.75rem) 'DM Mono', 'IBM Plex Sans Arabic', sans-serif; transition: border-color 150ms ease, background 150ms ease; }
+.field-value.has-actions { padding: 0 12px 0 78px; text-align: right; }
+/* النص في الجهة المعاكسة للأزرار (يسار فيزيائي) — يمين دائماً، لا وسط. */
+.field-value:focus { background: #fff; border-color: #71a994; box-shadow: 0 0 0 2px #16715f12; }
+.copy-button, .edit-button { width: 32px; height: 32px; display: grid; place-items: center; color: #6d7e7b; background: transparent; border: 0; border-radius: 3px; cursor: pointer; transition: color 150ms ease, background 150ms ease; }
+.copy-button:hover, .edit-button:hover:not(:disabled) { color: var(--green); background: #e7f1eb; }
+/* زر الإزالة الأحمر في عناوين الكاردات — قاعدة account-title svg الخضراء
+   تتقدم على اللون الموروث من الزر فيلزم استهداف الـ svg مباشرة. */
+.account-title .edit-button.danger svg { color: #c8443c; }
+.account-title .edit-button.danger:hover:not(:disabled) { color: #fff; background: #c8443c; }
+.account-title .edit-button.danger:hover:not(:disabled) svg { color: #fff; }
+.copy-button.is-copied { color: #fff; background: var(--green); }
+.edit-button:disabled { opacity: 0.45; cursor: not-allowed; }
+.copy-button:focus-visible, .edit-button:focus-visible, .member-tab:focus-visible, .member-add-btn:focus-visible { outline: 2px solid #e17a4a; outline-offset: 2px; }
+.record-footer { min-height: 45px; padding: 0 25px; display: flex; align-items: center; gap: 8px; color: #84908d; background: #fafbf9; border-top: 1px solid #edf0ed; font-size: 0.6875rem; }
+.footer-mark { width: 6px; height: 6px; border-radius: 50%; background: #73b693; }
+.footer-mark.has-error { background: var(--orange); }
+/* المحتوى والصفحة: flex:1 + قابل للتمرير. استُعيدت 2026-10-04 بعد أن
+   أكلفها حذف نطاقي أثناء ترحيل مجلد — وهي ما يجعل <main> يملأ المساحة
+   المتبقية بجانب اللوحة الجانبية بدل أن ينكمش ويترك فراغاً. */
+.page-content { flex: 1; min-height: 0; width: 100%; max-width: none; margin: 0; padding: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior-x: none; scrollbar-gutter: stable both-edges; }
+.page-content > * { min-width: 0; max-width: 100%; }
+.page-scroll-inner { width: 100%; max-width: none; margin: 0; padding: 26px 2.5% 20px; }
+.page-bottom-space { height: 50px; flex: 0 0 50px; }
+.page-footer { min-height: 20px; margin-block: 20px; display: flex; align-items: center; justify-content: center; color: #84908d; font-size: 0.75rem; }
+.footer-line { width: 33px; height: 1px; background: #cbd2cc; }
+.footer-separator { padding: 0 3px; color: #c0c7c2; }

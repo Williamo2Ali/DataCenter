@@ -1,0 +1,279 @@
+/* ============================================================================
+   16-pdf-viewer-header-mobile.css
+   ----------------------------------------------------------------------------
+   كتلة موحّدة واحدة لهيدر عارض الملفات على الموبايل (≤ 760px).
+   يُستورد هذا الملف أخيراً في index.css ليكون بعد كل قواعد الهيدر الموزّعة
+   على 03/04/05/06/10.
+
+   الهدف: سطر واحد بعرض ≤ 95% من الشاشة يحتوي:
+     1) التنقل بين الصفحات (السابق / رقم الصفحة / التالي)
+     2) أوضاع العرض (صفحة واحدة / كل الصفحات)
+     3) التكبير والتصغير (مع النسبة عند اتّساع المكان)
+   ويُخفى على الموبايل: أزرار الإجراءات (ملء الشاشة / حفظ / صورة / PDF).
+
+   ملاحظات:
+   - لا نضبط حجم أيقونات الـsvg هنا: يتحكّم فيه إعداد المستخدم
+     (--app-button-icon-size عبر قاعدة button svg.lucide في 08-modals.css).
+   - الديسكتوب (> 760px) لا يتأثر بهذا الملف.
+   ============================================================================ */
+
+/* زر قائمة إجراءات PDF (وضع المعاينة) — مخفي افتراضياً (الديسكتوب بلا تغيير)،
+   ويُعرض على الموبايل فقط ضمن الكتلة أدناه. */
+.pdf-viewer-header .pdf-menu-btn {
+  display: none;
+}
+
+/* زر نوع النص — مخفي على الديسكتوب (فيه قائمة النوع المنسدلة)،
+   ويُعرض على الموبايل فقط حيث القائمة مخفية. */
+.text-viewer-toolbar .text-kind-btn {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .pdf-viewer-header {
+    box-sizing: border-box;
+    max-width: 95vw;
+    min-height: 48px;
+    padding: 4px 8px;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 0;
+    /* يبقى ظاهراً أعلى الصفحة أثناء التمرير. */
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--paper);
+  }
+  /* سياق المعاينة كان يجعل الخلفية شفافة — مع التثبيت نحتاج خلفية مصمتة. */
+  .file-preview-page .pdf-viewer-header {
+    background: var(--paper);
+  }
+
+  /* معكوس عمداً: الإنجليزية تبدأ من اليمين (التنقل يميناً والتكبير يساراً)
+     والعربية من اليسار — عكس الربط الافتراضي باللغة. */
+  :root[dir="ltr"] .pdf-viewer-header {
+    direction: rtl;
+  }
+  :root[dir="rtl"] .pdf-viewer-header {
+    direction: ltr;
+  }
+
+  /* أزرار الإجراءات (ملء الشاشة، حفظ الأصلي، حفظ كصورة، حفظ PDF) مخفية على الموبايل */
+  .pdf-viewer-header .pdf-actions {
+    display: none;
+  }
+  /* وضعا العرض انتقلا لقائمة BottomList في معاينة PDF — يُخفيان من الشريط السفلي فقط.
+     (المكتبة والديسكتوب بلا مساس: القاعدة مقيدة بسياق المعاينة.) */
+  .file-preview-page .preview-kind-pdf .pdf-viewer-header .pdf-view-modes {
+    display: none;
+  }
+
+  /* الصف يتوسّط بدل أن يمتد على كامل العرض — فلا فراغات ضخمة بين المجموعات. */
+  .pdf-viewer-header .pdf-view-tools {
+    flex: 0 1 auto;
+    width: auto;
+    max-width: 100%;
+    min-width: 0;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  /* فراغ أوضح بين الأزرار داخل كل مجموعة (كان 2px فتبدو الأزرار متلاصقة). */
+  .pdf-viewer-header .pdf-page-controls,
+  .pdf-viewer-header .pdf-zoom-controls {
+    display: flex;
+    flex: 0 0 auto;
+    max-width: none;
+    gap: 6px;
+  }
+
+  /* أزرار أضيق عرضاً مع إبقاء الارتفاع مريحاً للّمس */
+  .pdf-viewer-header .viewer-icon-button {
+    width: 36px;
+    height: 40px;
+  }
+
+  /* عدّاد الصفحات: يظهر بشكل  [1] / 4 — ومعكوس اللغة:
+     الإنجليزية من اليمين (الحقل يميناً و«/ 4» يساره)، والعربية من اليسار. */
+  :root[dir="rtl"] .pdf-viewer-header .pdf-page-count {
+    display: flex;
+    direction: ltr;
+    gap: 3px;
+    min-width: 0;
+    font-size: 12px;
+  }
+  :root[dir="ltr"] .pdf-viewer-header .pdf-page-count {
+    display: flex;
+    direction: rtl;
+    gap: 3px;
+    min-width: 0;
+    font-size: 12px;
+  }
+  .pdf-viewer-header .pdf-page-word,
+  .pdf-viewer-header .pdf-page-of-word {
+    display: none;
+  }
+  .pdf-viewer-header .pdf-page-of::before {
+    content: '/ ';
+  }
+  .pdf-viewer-header .pdf-page-input {
+    width: 34px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  /* أوضاع العرض تظهر على الموبايل */
+  .pdf-viewer-header .pdf-view-modes {
+    display: inline-flex;
+    gap: 4px;
+  }
+  :root[dir="rtl"] .pdf-viewer-header .pdf-view-modes {
+    direction: ltr;
+  }
+  .pdf-viewer-header .pdf-view-mode {
+    flex: none;
+    width: 36px;
+    height: 40px;
+  }
+
+  /* نسبة التكبير تظهر (الصنف مخصّص لها حتى لا تُخفي القواعد أغلفة Tooltip) */
+  .pdf-viewer-header .pdf-zoom-controls > .pdf-zoom-label {
+    display: inline;
+    min-width: 34px;
+    font-size: 11px;
+  }
+
+  /* زر القائمة (BottomList) — يظهر في معاينة PDF فقط (bare) على الموبايل. */
+  .pdf-viewer-header .pdf-menu-btn {
+    display: grid;
+    width: 36px;
+    height: 40px;
+    flex: 0 0 auto;
+  }
+
+  /* توافق ملء الشاشة: قواعد 05 داخل .pdf-viewer.is-fullscreen أعلى تخصيصاً،
+     فنعيد هنا النتيجة نفسها (سطر واحد) حتى لا تُكسر الكتلة أثناء is-fullscreen. */
+  .pdf-viewer.is-fullscreen .pdf-viewer-header,
+  body.is-pdf-fullscreen .pdf-viewer.is-fullscreen .pdf-viewer-header {
+    min-height: 48px;
+    flex-wrap: nowrap;
+    align-content: normal;
+  }
+  .pdf-viewer.is-fullscreen .pdf-view-tools {
+    width: auto;
+  }
+}
+
+/* شاشات ضيقة جداً (≤ 340px): أخفِ نسبة التكبير ليتّسع الباقي */
+@media (max-width: 340px) {
+  .pdf-viewer-header .pdf-view-tools {
+    gap: 8px;
+  }
+  .pdf-viewer-header .pdf-zoom-controls > .pdf-zoom-label {
+    display: none;
+  }
+  .pdf-viewer-header .pdf-page-input {
+    width: 30px;
+  }
+}
+
+/* معاينة PDF على الموبايل (≤760px): نقل الهيدر كاملاً للأسفل بديل الشريط السفلي
+   (يماثل سلوك شريط مصغرات الصور) — مع زر القائمة للأزرار الأربعة المخفية.
+   الديسكتوب بلا مساس: القاعدة داخل media فقط، والشريط السفلي أصلاً للهواتف. */
+@media (max-width: 760px) {
+  .file-preview-page .preview-kind-pdf .pdf-viewer-header {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    z-index: 900;
+    max-width: none;
+    margin: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 0;
+    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+  }
+  /* الشريط السفلي يضم زر القائمة الثامن — نضيّق الفجوات والأزرار هنا فقط
+     حتى يتسع الصف كاملاً (التنقل + الأوضاع + التكبير + القائمة) بلا قصّ.
+     خارج المعاينة تبقى القيم الأصلية أعلاه بلا مساس. */
+  .file-preview-page .preview-kind-pdf .pdf-viewer-header .pdf-view-tools {
+    gap: 6px;
+  }
+  .file-preview-page .preview-kind-pdf .pdf-viewer-header .pdf-page-controls,
+  .file-preview-page .preview-kind-pdf .pdf-viewer-header .pdf-zoom-controls {
+    gap: 4px;
+  }
+  .file-preview-page .preview-kind-pdf .pdf-viewer-header .viewer-icon-button {
+    width: 36px;
+    height: 40px;
+  }
+  .file-preview-page .preview-kind-pdf .pdf-viewer-header .pdf-view-mode {
+    width: 36px;
+    height: 40px;
+  }
+  .file-preview-page .preview-kind-pdf .pdf-viewer-header .pdf-page-input {
+    width: 30px;
+  }
+  .file-preview-page .preview-kind-pdf .pdf-viewer-header .pdf-zoom-controls > .pdf-zoom-label {
+    min-width: 30px;
+    font-size: 10px;
+  }
+  /* قسم المعاينة يحمل `animation: reveal … both` (من 01) فيُبقي transform
+     بعد انتهائها فيصبح مرجعاً للـfixed — فيلتصق الشريط السفلي الثابت بآخر
+     المحتوى بدل أسفل الشاشة (يظهر في صفحة واحدة حيث المحتوى قصير).
+     إلغاؤها هنا يعيد المرجع لنافذة العرض. */
+  body.is-file-preview .records-section {
+    animation: none;
+  }
+  /* حشوة سفلية حتى لا يحجب الشريط الثابت آخر صفحة. */
+  .file-preview-page .preview-kind-pdf .preview-content {
+    padding-bottom: 70px;
+  }
+}
+
+/* شريط أدوات عارض النصوص (الموبايل ≤760px): ثابت أسفل الشاشة بديل الشريط
+   السفلي — كشريط عارض PDF — بلا تمرير أفقي: النوع المنسدلة والمنزلق مخفيان،
+   وتبقى الأزرار الستة (تنسيق/تصغير/تكبير/نوع/استعادة/التفاف) فقط. */
+@media (max-width: 760px) {
+  .file-preview-page .preview-kind-text .text-viewer-toolbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    z-index: 900;
+    margin: 0;
+    flex-wrap: nowrap;
+    background: var(--paper);
+    border-top: 1px solid var(--line);
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+  }
+  .file-preview-page .preview-kind-text .text-viewer-toolbar > * {
+    flex: 0 0 auto;
+  }
+  /* أزرار الشريط بحجم أزرار شريط PDF (36×40) والفجوة نفسها (6px). */
+  .file-preview-page .preview-kind-text .text-viewer-toolbar {
+    gap: 6px;
+  }
+  .file-preview-page .preview-kind-text .text-viewer-toolbar .viewer-icon-button {
+    width: 36px;
+    height: 40px;
+  }
+  .file-preview-page .preview-kind-text .text-viewer-toolbar .text-kind-select,
+  .file-preview-page .preview-kind-text .text-viewer-toolbar .text-font-slider {
+    display: none;
+  }
+  .file-preview-page .preview-kind-text .text-viewer-toolbar .text-kind-btn {
+    display: grid;
+  }
+  /* حشوة سفلية حتى لا يحجب الشريط الثابت آخر النص. */
+  .file-preview-page .preview-kind-text .preview-content {
+    padding-bottom: 70px;
+  }
+  /* الموبايل: احتياطي الهيدر والشريط السفلي الثابت — الصندوق 95% من الباقي وينتهي ملاصقاً للشريط. */
+  .file-preview-page .preview-kind-text .text-viewer pre {
+    height: calc((100dvh - 230px) * 0.95);
+  }
+}

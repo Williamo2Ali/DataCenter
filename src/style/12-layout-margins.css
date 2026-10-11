@@ -1,0 +1,53 @@
+/* ————— توحيد الهوامش: الغلاف 10px من كل جهة، والصفحات بلا هوامش —————
+   PageMother (.page-scroll-inner) هو الوحيد الذي يمنح الهامش، وكل
+   الصفحات الداخلية تصفّر هوامشها وحشوتها الجانبية. */
+.page-scroll-inner { padding: 10px; }
+.dashboard, .records-section, .document-library { padding: 0; }
+.dashboard { margin: 0; max-width: none; }
+.vault-panel, .repo-selector, .tabs-empty-state { margin: 0; }
+.settings-heading, .settings-sections,
+.repo-selector-heading, .repo-grid, .repo-create,
+.vault-heading, .vault-gate, .vault-body, .vault-registry, .vault-backup-wrap,
+.rtc, .fields-grid, .record-footer,
+.documents-sidebar-heading, .documents-location { padding-inline: 10px; }
+.field-form { margin-inline: 0; }
+.vault-error, .vault-notice, .vault-hint { margin-inline: 0; padding-inline: 10px; }
+.document-search { margin-inline: 10px; }
+.document-categories { padding-inline: 10px; }
+.add-field-btn, .record-panel > .vault-error { margin-inline: 0; }
+
+/* ————— تقليص الهوامش على الشاشات الصغيرة: حشوة واحدة فقط —————
+   القاعدة: الحاوية الخارجية (.page-scroll-inner) تمنح الحشوة الجانبية،
+   والمكونات الداخلية تصفّر حشوتها الجانبية حتى لا تتراكم الهوامش. */
+@media (max-width: 760px) {
+  .page-scroll-inner { padding: 8px 0 16px; }
+  .dashboard { padding: 4px 8px 20px; }
+  .dashboard-header { margin-bottom: 14px; }
+  .records-section, .document-library { padding-inline: 8px; }
+  .repo-welcome { padding-inline: 8px; }
+  .vault-panel, .repo-selector { margin-inline: 8px; }
+  .tabs-empty-state { margin-inline: 8px; }
+  .record-panel > .vault-error { margin: 10px 8px 0; }
+  .repo-card { padding: 14px; }
+  .field-form { width: 92%; margin: 12px auto 0; }
+  .add-field-btn { margin: 12px 12px 0; }
+  .record-panel > .vault-error { margin: 10px 12px 0; }
+  .rtc { padding: 16px 14px; }
+  .fields-grid { padding: 16px 14px 12px; }
+  .record-footer { padding-inline: 14px; }
+  .settings-heading { padding: 20px 14px 14px; }
+  .settings-sections { padding: 10px 14px; }
+
+
+
+
+  .settings-tab-row { padding: 10px; }
+  .repo-selector-heading { padding: 20px 14px 14px; }
+  .repo-grid { padding: 12px 14px 4px; grid-template-columns: minmax(0, 1fr); }
+  .repo-create { padding: 12px 14px 18px; }
+  .documents-sidebar-heading { padding: 12px 14px 10px; }
+  .document-search { margin: 10px 10px 6px; }
+  .document-categories { padding: 4px 10px 8px; }
+  .documents-location { padding: 10px 14px; }
+}
+

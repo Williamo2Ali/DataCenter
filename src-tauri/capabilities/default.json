@@ -1,0 +1,45 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "enables the default permissions",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-set-size",
+    "core:window:allow-set-position",
+    "core:window:allow-set-fullscreen",
+    "core:window:allow-destroy",
+    "core:window:allow-minimize",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-start-dragging",
+    "fs:allow-mkdir",
+    "fs:allow-write-file",
+    "fs:allow-read-file",
+    "fs:allow-remove",
+    "fs:allow-exists",
+    {
+      "identifier": "fs:scope",
+      "allow": ["$APPDATA/vaults", "$APPDATA/vaults/*", "$APPDATA/repos", "$APPDATA/repos/*", "$APPDATA/repos/**"]
+    },
+    "dialog:allow-save",
+    "dialog:allow-open",
+    "opener:allow-reveal-item-in-dir",
+    "opener:allow-open-url",
+    "opener:allow-default-urls",
+    "os:allow-platform",
+    "device-contacts:allow-check-permissions",
+    "device-contacts:allow-request-permissions",
+    "device-contacts:allow-check-device-permissions",
+    "device-contacts:allow-request-device-permissions",
+    "device-contacts:allow-get-device-contacts",
+    "device-contacts:allow-add-device-contact",
+    "file-copy:allow-copy-file",
+    "file-copy:allow-display-name",
+    "file-copy:allow-export-file",
+    "file-copy:allow-read-head",
+    "file-share:allow-share-files"
+  ]
+}

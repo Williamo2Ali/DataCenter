@@ -1,0 +1,85 @@
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --ink: #f0f0f2;
+  --muted: #aaaab0;
+  --line: #3b3b41;
+  --paper: #1d1d20;
+  --green: #79bd9b;
+  --orange: #efa17c;
+  --app-bg: #101012;
+  --text: #eeeeF0;
+  --text-muted: #a8a8ae;
+  color: var(--text);
+  background: var(--app-bg);
+}
+
+:root[data-theme='dark'] body { background-color: var(--app-bg); background-image: none; }
+:root[data-theme='dark'] .status-dot { box-shadow: 0 0 0 3px #303035; }
+:root[data-theme='dark'] .member-tab { color: #e1e1e5; background: #1c1c20; border-color: #37373d; }
+:root[data-theme='dark'] .member-tab:hover { border-color: #8cc5a4; box-shadow: 0 0 0 2px #8cc5a424; }
+:root[data-theme='dark'] .member-tab.is-active { color: #f2f2f4; background: #34343a; border-color: #4b4b53; }
+:root[data-theme='dark'] .tab-index, :root[data-theme='dark'] .tab-relation { color: #a9a9af; }
+:root[data-theme='dark'] .member-tab.is-active .tab-relation { color: #d0d0d4; }
+:root[data-theme='dark'] .record-panel, :root[data-theme='dark'] .accounts-section, :root[data-theme='dark'] .documents-sidebar, :root[data-theme='dark'] .pdf-viewer { background: var(--paper); border-color: #3b3b41; }
+:root[data-theme='dark'] .rtc { color: #f0f0f2; background: #252529; }
+:root[data-theme='dark'] .rtc-kicker { color: #9dd1b3; }
+:root[data-theme='dark'] .rtc-sub { color: #c4c4ca; }
+:root[data-theme='dark'] .field-label, :root[data-theme='dark'] .eyebrow { color: #afbeb5; }
+:root[data-theme='dark'] .field-value, :root[data-theme='dark'] .account-field-value, :root[data-theme='dark'] .document-search { color: #e6e6ea; background: #252529; border-color: #404046; }
+:root[data-theme='dark'] .field-value:focus { background: #303035; }
+:root[data-theme='dark'] .copy-button { color: #d0d0d4; }
+:root[data-theme='dark'] .copy-button:hover, :root[data-theme='dark'] .edit-button:hover:not(:disabled), :root[data-theme='dark'] .account-action:hover { color: #f0f0f2; background: #34343a; }
+:root[data-theme='dark'] .edit-button { color: #d0d0d4; }
+:root[data-theme='dark'] .copy-button.is-copied, :root[data-theme='dark'] .account-action.is-copied { color: #14241b; }
+:root[data-theme='dark'] .record-footer, :root[data-theme='dark'] .pdf-viewer-footer { color: #b0b0b6; background: #242428; border-color: #3b3b41; }
+:root[data-theme='dark'] .page-footer, :root[data-theme='dark'] .heading-description { color: #b0b0b6; }
+:root[data-theme='dark'] .accounts-heading h3, :root[data-theme='dark'] .account-title { color: #e4e4e8; }
+:root[data-theme='dark'] .account-card { background: #242428; border-color: #3b3b41; }
+:root[data-theme='dark'] .account-field-label, :root[data-theme='dark'] .accounts-empty, :root[data-theme='dark'] .accounts-feedback { color: #b0b0b6; }
+:root[data-theme='dark'] .account-action { color: #c9c9ce; }
+:root[data-theme='dark'] .account-action.is-copied { background: var(--green); }
+:root[data-theme='dark'] .document-item:hover { background: #2b2b30; }
+:root[data-theme='dark'] .document-item.is-active { background: #36363b; border-color: #515158; }
+:root[data-theme='dark'] .document-item-title { color: #e4e4e8; }
+:root[data-theme='dark'] .document-item-owner, :root[data-theme='dark'] .documents-location, :root[data-theme='dark'] .documents-kicker { color: #b0b0b6; }
+:root[data-theme='dark'] .document-item-icon { color: #a4ceb4; background: #303035; }
+:root[data-theme='dark'] .file-section-card { background: var(--paper); border-color: #3b3b41; }
+:root[data-theme='dark'] .document-search input { color: #e6e6ea; }
+:root[data-theme='dark'] .document-category { color: #c5c5ca; border-color: #45454b; }
+:root[data-theme='dark'] .document-category.is-active { color: #15231c; background: #8cc5a4; border-color: #8cc5a4; }
+:root[data-theme='dark'] .pdf-viewer-header, :root[data-theme='dark'] .pdf-toolbar { border-color: #3b3b41; background: var(--paper); }
+:root[data-theme='dark'] body.is-pdf-fullscreen .pdf-viewer.is-fullscreen .pdf-viewer-header { background: var(--paper); border-color: #3b3b41; box-shadow: none; }
+:root[data-theme='dark'] .pdf-page-count { color: #b0b0b6; }
+:root[data-theme='dark'] .pdf-page-count strong { color: #e4e4e8; }
+:root[data-theme='dark'] .pdf-page-input { color: #e6e6ea; background: #2a2a2f; border-color: #404046; color-scheme: dark; }
+:root[data-theme='dark'] .pdf-page-input:focus { border-color: #8cc5a4; }
+:root[data-theme='dark'] .pdf-page-input::selection { background: #8cc5a455; }
+:root[data-theme='dark'] .pdf-view-modes { background: #17171a; border-color: #3d3d43; }
+:root[data-theme='dark'] .pdf-view-mode { color: #b3b3b9; }
+:root[data-theme='dark'] .pdf-view-mode.is-active { color: #f0f0f2; background: #333338; border-color: #4a4a50; }
+:root[data-theme='dark'] .pdf-scroll-page { background: #202024; border-color: #3c3c42; }
+:root[data-theme='dark'] .pdf-scroll-page-label { color: #b4b4ba; }
+:root[data-theme='dark'] .pdf-scroll-page-body { background: #fff; }
+:root[data-theme='dark'] .pdf-file-copy h2 { color: #e4e4e8; }
+:root[data-theme='dark'] .pdf-file-copy p, :root[data-theme='dark'] .pdf-toolbar { color: #b0b0b6; }
+:root[data-theme='dark'] .pdf-action, :root[data-theme='dark'] .viewer-icon-button { color: #d0d0d4; background: #2a2a2f; border-color: #404046; }
+:root[data-theme='dark'] .pdf-action-primary { color: #14241b; background: #8cc5a4; border-color: #8cc5a4; }
+:root[data-theme='dark'] .pdf-canvas-frame { background: #101012; }
+:root[data-theme='dark'] .pdf-zoom-fab button { color: #fff; }
+:root[data-theme='dark'] .documents-sidebar-heading, :root[data-theme='dark'] .document-categories, :root[data-theme='dark'] .documents-location { border-color: #3b3b41; }
+
+
+:root[data-theme='dark'] .settings-sections { border-color: #3b3b41; }
+:root[data-theme='dark'] .settings-section-tab { color: #b4c1b9; }
+:root[data-theme='dark'] .settings-section-tab:hover { color: #f1f1f3; background: #2a2a2f; }
+:root[data-theme='dark'] .settings-section-tab.is-active { color: #a5d4b9; background: #333338; border-color: #4a4a50; }
+
+
+
+
+
+
+
+
+
+

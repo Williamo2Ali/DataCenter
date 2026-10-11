@@ -1,0 +1,205 @@
+/* BottomList.module.css */
+
+.host {
+  --bl-scrim: rgba(20, 30, 28, 0.4);
+  --bl-surface: var(--paper);
+  --bl-on-surface: var(--ink);
+  --bl-on-surface-variant: var(--muted);
+  --bl-accent: var(--green);
+  --bl-danger: #c8443c;
+  --bl-state: currentColor;
+  --bl-radius: 28px;
+  --bl-max-width: 640px;
+  --bl-max-height: min(88vh, 720px);
+
+  --bl-enter-duration: 400ms;
+  --bl-enter-easing: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --bl-exit-duration: 200ms;
+  --bl-exit-easing: cubic-bezier(0.3, 0, 0.8, 0.15);
+
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.hostOpen {
+  pointer-events: auto;
+}
+
+/* الوضع الداكن يتبع سمة التطبيق (data-theme) — لا تفضيل النظام. */
+:root[data-theme='dark'] .host {
+  --bl-scrim: rgba(0, 0, 0, 0.5);
+  --bl-surface: var(--paper);
+  --bl-on-surface: var(--ink);
+  --bl-on-surface-variant: var(--muted);
+  --bl-accent: var(--green);
+  --bl-danger: #e88d86;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--bl-scrim);
+  opacity: 0;
+  transition: opacity var(--bl-exit-duration) var(--bl-exit-easing);
+  will-change: opacity;
+}
+
+.scrimVisible {
+  opacity: 1;
+  transition: opacity var(--bl-enter-duration) var(--bl-enter-easing);
+}
+
+.sheet {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  margin-inline: auto;
+  max-width: var(--bl-max-width);
+  max-height: var(--bl-max-height);
+  display: flex;
+  flex-direction: column;
+  background: var(--bl-surface);
+  color: var(--bl-on-surface);
+  border-radius: var(--bl-radius) var(--bl-radius) 0 0;
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.08), 0 -10px 32px rgba(0, 0, 0, 0.18);
+  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  transform: translate3d(0, 100%, 0);
+  transition: transform var(--bl-exit-duration) var(--bl-exit-easing);
+  will-change: transform;
+  overscroll-behavior: contain;
+}
+
+.sheetVisible {
+  transform: translate3d(0, 0, 0);
+  transition: transform var(--bl-enter-duration) var(--bl-enter-easing);
+}
+
+.sheet:focus { outline: none; }
+
+.dragging { cursor: grabbing; }
+
+.handleArea {
+  display: flex;
+  justify-content: center;
+  padding-block: 22px 14px;
+  touch-action: none;
+  cursor: grab;
+  flex: none;
+}
+
+.handle {
+  width: 32px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--bl-on-surface-variant);
+  opacity: 0.4;
+}
+
+.title {
+  margin: 0;
+  padding: 0 24px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  flex: none;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  padding: 14px 24px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--bl-state);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms linear;
+}
+
+.item:hover::after { opacity: 0.06; }
+.item:active::after { opacity: 0.12; transition-duration: 60ms; }
+
+.item:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: -2px;
+}
+
+.item:disabled {
+  cursor: default;
+  opacity: 0.38;
+}
+
+.item:disabled::after { opacity: 0; }
+
+.icon {
+  flex: none;
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  color: var(--bl-accent);
+}
+
+.icon > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.itemDanger .icon { color: var(--bl-danger); }
+.itemDanger .label { color: var(--bl-danger); }
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.label {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--bl-on-surface-variant);
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .sheetVisible,
+  .scrim,
+  .scrimVisible {
+    transition-duration: 1ms;
+  }
+}

@@ -1,0 +1,55 @@
+/* ————— شريحة سياق المستودع في الهيدر (Mobile-First) —————
+   القاعدة للشاشات الصغيرة والموبايل: مدمجة، نص مقصوص بـ ellipsis.
+   الشاشات الأكبر توسّعها عبر min-width. */
+.brand-chip {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.brand-chip svg { color: var(--green); }
+
+
+
+/* ————— أهداف اللمس (موبايل/تابلت) ————— */
+@media (pointer: coarse) {
+  /* شريط التمرير العمودي الكلاسيكي يأخذ مساحة من جهة واحدة في RTL
+     (يساراً) فيظهر هامش جهة الزر أكبر من جهة العنوان — نخفيه على اللمس
+     (التمرير بالأصابع يبقى يعمل) فتبقى هوامش المحتوى متناظرة. */
+  .page-content { scrollbar-width: none; scrollbar-gutter: auto; }
+  .page-content::-webkit-scrollbar { display: none; }
+  .profile-avatar-btn { width: 44px; height: 44px; }
+  .repo-action-btn { width: 44px; height: 44px; }
+  .repo-open-btn { min-height: 44px; }
+  .modal-btn { min-height: 44px; }
+  .member-tab { min-height: 76px; }
+}
+
+/* أهداف لمس أزرار الهيدر الأيقونية: للشاشات الأوسع (تابلت / لمس الديسكتوب) فقط،
+   حتى لا تفرض 44px على هواتف الموبايل فتُوسّع صف الهيدر. */
+@media (pointer: coarse) and (min-width: 761px) {
+  .viewer-icon-button { width: 44px; height: 44px; }
+}
+
+/* ————— اسم المستودع في هيدر الهاتف (نص فقط، الزر في أقصى اليمين) ————— */
+.repo-name-label {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modal-overlay {
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+}
+

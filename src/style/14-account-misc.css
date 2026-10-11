@@ -1,0 +1,20 @@
+/* ————— صفحة الحساب (Mobile-First) —————
+   الأساس: التبويبات صف علوي، المحتوى تحته.
+   الشاشات الأكبر: التبويبات عمود على اليسار، المحتوى يميناً. */
+
+
+/* هيدر صفحة الحساب — زر إغلاق فقط. flex-end يبقيه في نفس الجانب
+   الذي كان عليه عندما كان العنوان موجوداً. */
+
+
+@media (min-width: 700px) {
+
+
+}
+
+
+/* ————— الهيدر: رُحّل بالكامل إلى أدوات Tailwind (2026-10-04) —————
+   كانت هنا: .app-header* / #boxright / #boxleft / .window-control* / .repo-context*
+   وألوان التجربة (أصفر/أحمر). الظهور عند 1024px صار `hidden lg:block`
+   في AppHeader.tsx و `block lg:hidden` في AppHeaderMobile.tsx.
+   اللقطة المعتمدة محفوظة في plan/Finished/header-layout-ar.md. */

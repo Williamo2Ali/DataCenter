@@ -1,0 +1,67 @@
+/* ——— جدول التبويبات ——— */
+
+
+/* خلايا الاسم نصٌّ صِرف — لا حقل إدخال. التعديل من زر القلم وحده. */
+
+
+/* الميلان يتبع لغة التطبيق لا اتجاه النص: الخلية span لها dir خاص يوجّه المحرف
+   داخلها، فلو تُرك text-align بلا ضبط لانحاز كل عمود حسب لغته لا حسب الواجهة. */
+
+
+
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+
+
+/* ————— طابع نسخة البناء (لتمييز النسخ عند التجربة) ————— */
+.build-stamp {
+  margin: 0;
+  padding: 6px 28px 14px;
+  color: var(--text-muted);
+  font: 0.625rem 'DM Mono', monospace;
+  opacity: 0.8;
+}
+:root[data-theme='dark'] .build-stamp { color: #8a8a90; }
+
+@media (max-width: 760px) {
+  .document-library { grid-template-columns: minmax(0, 1fr); gap: 11px; }
+  .documents-sidebar { max-height: none; }
+  .document-list { max-height: 218px; }
+  .documents-categories { flex-wrap: nowrap; overflow-x: auto; }
+  /* زرّا التكبير العائمان: ثابتان أسفل الشاشة فوق الشريط السفلي — لا ينتظران آخر صفحة. */
+  .file-preview-page .pdf-zoom-fab { position: fixed; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); z-index: 5; }
+  /* كارد المعاينة بلا حشوة على الهاتف: المحتوى (PDF/صورة/فيديو) حتى حافة الكارد. */
+  .records-section > .file-section-card.file-preview-page { padding: 0; border-radius: 6px; }
+  .pdf-viewer.is-fullscreen .pdf-viewer-header { min-height: 82px; flex-wrap: wrap; align-content: center; }
+  body.is-pdf-fullscreen .pdf-viewer.is-fullscreen .pdf-viewer-header { min-height: 82px; flex-wrap: wrap; align-content: center; }
+  .pdf-viewer.is-fullscreen .pdf-view-tools { width: 100%; }
+  body.is-pdf-fullscreen .pdf-viewer.is-fullscreen .pdf-canvas-frame { margin-top: 0; }
+  .pdf-canvas-frame { min-height: 400px; padding: 14px; }
+  .pdf-canvas-frame.is-all-pages { padding: 12px 10px; }
+  /* المعاينة فوقهما دائماً: إطار عارٍ بلا حشوة حتى على الهاتف (ملف 03 أسبق ترتيباً). */
+  .file-preview-page .pdf-canvas-frame, .file-preview-page .pdf-canvas-frame.is-all-pages { padding: 0; }
+  .file-preview-page .pdf-scroll-page { padding: 0; }
+  .pdf-canvas-stage { min-height: 370px; }
+  .pdf-scroll-page { max-width: 100%; padding: 7px; }
+}
+
+@media (max-width: 480px) {
+  .section-tabs { gap: 2px; }
+  .section-tab { padding-inline: 9px; font-size: 0.6875rem; }
+  .settings-heading { padding: 22px 18px 18px; }
+
+
+
+
+
+
+
+
+
+
+  .pdf-canvas-frame { min-height: 380px; padding: 10px; }
+  .pdf-canvas-stage { min-height: 350px; }
+  .pdf-scroll-page-body { min-width: 0; }
+}
+

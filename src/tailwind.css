@@ -1,0 +1,69 @@
+/* ————————————————————————————————————————————————————————————
+   مدخل Tailwind v4 — **الملف المرجعي الوحيد للثيم والأنماط**،
+   وهو مستثنى من التحويل ولا يُلمس.
+
+   التحويل يجري مجلداً مجلداً: index.css يبقى مصدر الأنماط
+   حتى تُرحَّل أقسامه بالكامل، ثم يُحذف.
+
+   ترتيب الاستيراد في main.tsx مهم: Tailwind أولاً ثم index.css.
+   قواعد index.css غير مُطبَّقة على طبقة (unlayered) فتتقدّم على
+   طبقات Tailwind — ولهذا يجب حذف قواعد أي مجلد في خطوة واحدة مع
+   تحويله، وإلا كتبت فوق أدواته. */
+/* `source(none)` يُوقف الفحص التلقائي لجذر المشروع. بدونه كان Tailwind
+   يقرأ ملفات .agents و plan ويستخرج منها أصنافاً غير موجودة في التطبيق
+   (مثل examples ووثائق المهارة) — فينتفخ ملف الأنماط ويتغيّر بتغيّرها. */
+@import "tailwindcss" source(none);
+@source "./";
+
+/* محوران في التطبيق: الثيم واللغة. متغيّرات مخصّصة لأن Tailwind
+   يقرأ dark من صنف .dark افتراضياً، وتطبيقنا يستخدم data-theme. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+@custom-variant ar (&:where([lang='ar'], [lang='ar'] *));
+@custom-variant en (&:where([lang='en'], [lang='en'] *));
+
+/* حالات كانت في index.css عبر أصناف على body/html — نُبقيها كأسماء متغيّرات
+   حتى لا يتغيّر السلوك عند التحويل. */
+@custom-variant pinned (&.is-pinned);
+@custom-variant data-mode (&:where(body.is-data-mode *));
+@custom-variant pdf-fullscreen (&:where(body.is-pdf-fullscreen *));
+@custom-variant android (&:where(html[data-platform='android'] *));
+
+/* خريطة رموز التصميم: نأخذ قيم :root الموجودة في index.css كما هي
+   ولا نُعيد تعريفها. `inline` يجعل الأدوات تُشير إلى المتغيّر مباشرةً
+   (var(--ink)) بدل توليد :root جديد — وبذلك ينقلب الثيم وحده. */
+@theme inline {
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-paper: var(--paper);
+  --color-green: var(--green);
+  --color-orange: var(--orange);
+  --color-app-bg: var(--app-bg);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+
+  /* ألوان خاصة بالهيدر — منقولة كما هي من index.css */
+  --color-ctrl: #485651;
+  --color-ctrl-hover: #2e413c;
+  --color-ctrl-hover-bg: #e8ede9;
+  --color-ctrl-pinned: #16715f;
+  --color-ctrl-close: #c8443c;
+  --color-ctrl-close-bg: #fbeae8;
+
+  /* حركة الظهور — كانت @keyframes في index.css، وهي أصل متغيّر
+     فتنتمي إلى طبقة الثيم لا إلى ملف التطبيق. */
+  --animate-reveal: reveal 420ms ease both;
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(9px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* دخول عناصر قائمة تبويبات اللوحة — كان @keyframes في index.css.
+    ملاحظة: أي حركة يُشار إليها بـ animate-[...] يجب أن تُعرَّف هنا،
+    وإلا استُخدم اسمٌ غير معرّف ولم يظهر أي أثر بصري بصمت. */
+  --animate-tabs-item-in: tabs-item-in 260ms ease both;
+  @keyframes tabs-item-in {
+    from { opacity: 0; transform: translateY(7px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}

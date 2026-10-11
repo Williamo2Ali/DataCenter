@@ -1,0 +1,121 @@
+/* ————— التحرير الكامل: أفراد + حقول (Mobile-First) ————— */
+.member-tabs-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 2px 8px;
+  color: var(--ink);
+  background: var(--app-bg);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.member-tablist { display: contents; }
+.member-add-btn {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--green);
+  border: 1px solid var(--green);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.member-add-btn:hover:not(:disabled) { background: #105b4d; }
+.member-add-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+/* زر الإضافة المضمّن للديسكتوب فقط (حيث هيدر الديسكتوب ظاهر ≥1024px) —
+   على الأصغر يعيش الزر في المنطقة المخصصة بهيدر الموبايل. */
+@media (max-width: 1023px) {
+  .member-add-btn { display: none; }
+}
+/* صف الأفراد للديسكتوب/التابلت فقط — على الهواتف يحل محله MobileMemberChips. */
+@media (max-width: 639px) {
+  .member-tabs { display: none; }
+}
+.field-row.is-editing { grid-column: 1 / -1; background: #f2f7f3; border: 1px dashed #b9d0c3; border-radius: 6px; padding: 10px; }
+.field-edit-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.field-edit-actions.equal-btns > * { flex: 1 1 0; min-width: 0; white-space: nowrap; }
+/* صف أزرار بطاقة التحرير: بعرض مكونات الإدخال نفسها (كامل الصف)، أزرار متساوية (أيقونة + نص). */
+.field-row.is-editing .field-edit-actions { width: 100%; margin-inline: 0; flex-wrap: nowrap; }
+.field-row.is-editing .field-edit-actions > * { flex: 1 1 0; min-width: 0; white-space: nowrap; }
+.field-hint { margin: 2px 1px 0; color: #84908d; font-size: 0.625rem; }
+:root[data-theme='dark'] .field-hint { color: #8f8f96; }
+/* تذييلات المودالات المتساوية: أزرار بنفس الحجم بالمنتصف. */
+.modal-footer.equal-btns { justify-content: center; }
+.modal-footer.equal-btns > .modal-btn { flex: 1 1 0; min-width: 0; max-width: 35%; white-space: nowrap; }
+.field-form {
+  width: 92%;
+  margin: 16px auto 0;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #f8faf8;
+  border: 1px dashed #b9d0c3;
+  border-radius: 6px;
+}
+/* حاوية كارد التعديل المفرد: حاوية فقط بلا هوامش ولا حدود — والفورم بملء عرضها. */
+#cardeditparent { margin: 0; padding: 0; border: 0; background: transparent; }
+#cardeditparent > .field-form { width: 100%; margin: 0; }
+/* نموذج إضافة عمود: بملء العرض متمركزاً. */
+.field-form.add-column-form { width: 100%; margin-inline: auto; }
+.add-field-btn {
+  margin: 16px 25px 0;
+  min-height: 40px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--green);
+  background: transparent;
+  border: 1px dashed #9dbfaf;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+.add-field-btn:hover:not(:disabled) { background: #edf4ef; border-color: var(--green); border-style: solid; }
+.add-field-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.add-field-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+/* ——— صف أزرار العارض: إضافة بالكامل، ثم إدارة 50% + تبديل اللغة 50% ———
+   الحاوية 92% من العرض، والزرّان متساويان بلا التفاف. */
+.viewer-actions-col { width: 92%; margin: 16px auto 0; display: flex; flex-direction: column; gap: 8px; }
+.viewer-actions-col .add-field-btn { margin: 0; width: 100%; }
+.viewer-actions-row { display: flex; gap: 8px; }
+.viewer-actions-row .add-field-btn { margin: 0; flex: 1 1 50%; min-width: 0; white-space: nowrap; }
+/* صف أزرار العارض المشترك: إدارة الحقول 60% + تبديل اللغة 40%.
+   الغلاف (Tooltip span) هو عنصر الـ flex — الزر يملؤه عرضاً. */
+.table-actions-row .table-actions-manage { flex: 1 1 60%; min-width: 0; }
+.table-actions-row .table-actions-lang { flex: 1 1 40%; min-width: 0; }
+.table-actions-row .table-actions-manage > .add-field-btn,
+.table-actions-row .table-actions-lang > .add-field-btn { width: 100%; }
+/* صف أزرار متساوٍ عام: كل عنصر (زر أو غلاف Tooltip) بنصف العرض — والزر يملؤه. */
+.viewer-actions-row.viewer-actions-even > * { flex: 1 1 0; min-width: 0; }
+.viewer-actions-row.viewer-actions-even .viewer-actions-even-item > .add-field-btn { width: 100%; }
+/* صف جهات الاتصال: الإدارة 40% + الهاتف 60% (الأيقونة مع النص تحتاج مساحة). */
+.contact-actions-row .contact-actions-manage { flex: 1 1 40%; min-width: 0; }
+.contact-actions-row .contact-actions-menu { flex: 1 1 60%; min-width: 0; }
+.contact-actions-row .contact-actions-manage > .add-field-btn,
+.contact-actions-row .contact-actions-menu > .add-field-btn { width: 100%; }
+@media (max-width: 760px) {
+  .viewer-actions-col { width: 92%; margin: 12px auto 0; }
+}
+.record-panel > .vault-error { margin: 14px 25px 0; }
+:root[data-theme='dark'] .member-tabs-head { color: #e4e4e8; background: var(--app-bg); }
+:root[data-theme='dark'] .field-row.is-editing { background: #242428; border-color: #515158; }
+:root[data-theme='dark'] .field-form { background: #242428; border-color: #515158; }
+:root[data-theme='dark'] .add-field-btn { color: #a5d4b9; border-color: #4a5a52; }
+:root[data-theme='dark'] .add-field-btn:hover:not(:disabled) { background: #242428; border-color: #8cc5a4; }
+
+:root[data-theme='dark'] .brand-chip { color: #e4e4e8; }
+:root[data-theme='dark'] .brand-chip svg { color: #8cc5a4; }
+
+

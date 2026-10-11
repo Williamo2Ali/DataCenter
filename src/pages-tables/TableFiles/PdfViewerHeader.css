@@ -1,0 +1,447 @@
+/* ============================================================================
+   PdfViewerHeader.css
+   ----------------------------------------------------------------------------
+   تنسيقات مستقلة (Standalone) لمكوّن البار العلوي  PdfViewerHeader.tsx
+   — استخراج كامل لقيم الـCSS التي يستخدمها الهيدر حالياً، مجموعة في ملف واحد
+     بحيث لا يعتمد على أي ملف تنسيقات مشترك آخر.
+
+   المصادر التي استُخرجت منها القيم (لم يُعدَّل أي منها):
+     1) src/style/04-documents.css        (القواعد الأساسية للهيدر وأزراره)
+     2) src/style/06-theme-dark.css       (الوضع الداكن)
+     3) src/style/05-stamp-responsive.css (استجابة 760px / 480px + سياق المعاينة)
+     4) src/style/10-header-mobile.css    (أهداف اللمس pointer: coarse)
+     5) src/style/08-modals.css           (قاعدة عامة عامة على كل <button>)
+     6) src/style/03-data-mode.css        (سياق صفحة المعاينة .file-preview-page)
+     7) src/style/01-tokens-base.css      (متغيّرات الثيم — نُسخت هنا محلياً)
+
+   ملاحظة: هذا الملف نسخة مرجعية تعكس الحالة النهائية للمكوّن بعد تعديل
+   الموبايل — وهو غير مُستورد في أي مكان، والمصدر الفعلي للتشغيل هو ملفات
+   src/style وعلى رأسها 16-pdf-viewer-header-mobile.css. لا تعتمد عليه للتشغيل.
+   ============================================================================ */
+
+
+/* ============================================================================
+   1) متغيّرات الثيم — محصورة بجذر المكوّن (بديل مستقل عن ملفات الثيم).
+      القيم منقولة حرفياً من 01-tokens-base.css و 06-theme-dark.css.
+   ============================================================================ */
+.pdf-viewer-header {
+  --ink: #192c31;
+  --muted: #748184;
+  --line: #e2e7e3;
+  --paper: #fff;
+  --green: #16715f;
+  --orange: #e17a4a;
+  --text-muted: #758184;
+  /* يضبطها App.tsx من إعدادات المستخدم (افتراضي 14px). */
+  --app-button-font-size: 14px;
+}
+:root[data-theme='dark'] .pdf-viewer-header {
+  --ink: #f0f0f2;
+  --muted: #aaaab0;
+  --line: #3b3b41;
+  --paper: #1d1d20;
+  --green: #79bd9b;
+  --orange: #efa17c;
+  --text-muted: #a8a8ae;
+}
+
+
+/* ============================================================================
+   2) القواعد الأساسية
+      (المصدر: src/style/04-documents.css)
+   ============================================================================ */
+
+/* --- الحاوية الرئيسية --- */
+.pdf-viewer-header {
+  min-height: 46px;
+  padding: 5px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid #e9ede9;
+}
+
+.pdf-view-tools {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* --- مجموعتا التنقل والتكبير --- */
+.pdf-page-controls,
+.pdf-zoom-controls {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 7px;
+  color: #788680;
+  font: 0.625rem 'DM Mono', sans-serif;
+}
+
+/* --- عدّاد الصفحات وصندوق الرقم --- */
+.pdf-page-count {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #75827c;
+  font: 0.625rem 'IBM Plex Sans Arabic', sans-serif;
+  white-space: nowrap;
+}
+
+.pdf-page-input {
+  width: 39px;
+  height: 27px;
+  padding: 0 3px;
+  color: #344741;
+  background: #fff;
+  border: 1px solid #dfe6e0;
+  border-radius: 3px;
+  font: 0.6875rem 'DM Mono', monospace;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.pdf-page-input::-webkit-outer-spin-button,
+.pdf-page-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.pdf-page-input:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 1px;
+}
+
+.pdf-page-count strong {
+  color: #344741;
+  font-family: 'DM Mono', monospace;
+  font-weight: 500;
+}
+
+/* --- أزرار أوضاع العرض --- */
+.pdf-view-modes {
+  min-height: 31px;
+  padding: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: #f3f6f3;
+  border: 1px solid #e4e9e5;
+  border-radius: 4px;
+}
+.pdf-view-mode {
+  width: 30px;
+  min-height: 25px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  color: #75827c;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.pdf-view-mode:hover {
+  color: var(--ink);
+}
+.pdf-view-mode.is-active {
+  color: var(--green);
+  background: #fff;
+  border-color: #dfe7e0;
+  box-shadow: 0 1px 3px #1d34300a;
+  font-weight: 600;
+}
+.pdf-view-mode:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 1px;
+}
+
+.pdf-zoom-controls > span {
+  min-width: 37px;
+  text-align: center;
+}
+
+/* --- الأزرار الأيقونية --- */
+.viewer-icon-button {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: #73817b;
+  background: #fff;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: color 130ms ease, background 130ms ease;
+}
+.viewer-icon-button:hover:not(:disabled) {
+  color: var(--green);
+  background: #eff5f0;
+}
+.viewer-icon-button:disabled {
+  color: #c0c8c3;
+  cursor: not-allowed;
+}
+
+/* --- أزرار الإجراءات --- */
+.pdf-actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 4px;
+}
+.pdf-action {
+  width: 36px;
+  min-height: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  flex: 0 0 36px;
+  align-items: center;
+  justify-content: center;
+  color: #53635d;
+  background: #fff;
+  border: 1px solid #dfe6e0;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+.pdf-action:hover:not(:disabled) {
+  color: var(--green);
+  border-color: #a9c5b3;
+  background: #f5f9f5;
+}
+.pdf-action-primary {
+  color: #fff;
+  background: var(--green);
+  border-color: var(--green);
+}
+.pdf-action-primary:hover:not(:disabled) {
+  color: #fff;
+  background: #105b4d;
+  border-color: #105b4d;
+}
+.pdf-action:disabled {
+  opacity: .48;
+  cursor: not-allowed;
+}
+
+
+/* ============================================================================
+   3) الوضع الداكن
+      (المصدر: src/style/06-theme-dark.css)
+   ============================================================================ */
+:root[data-theme='dark'] .pdf-viewer-header {
+  border-color: #3b3b41;
+  background: var(--paper);
+}
+:root[data-theme='dark'] .pdf-page-count {
+  color: #b0b0b6;
+}
+:root[data-theme='dark'] .pdf-page-count strong {
+  color: #e4e4e8;
+}
+:root[data-theme='dark'] .pdf-page-input {
+  color: #e6e6ea;
+  background: #2a2a2f;
+  border-color: #404046;
+  color-scheme: dark;
+}
+:root[data-theme='dark'] .pdf-page-input:focus {
+  border-color: #8cc5a4;
+}
+:root[data-theme='dark'] .pdf-page-input::selection {
+  background: #8cc5a455;
+}
+:root[data-theme='dark'] .pdf-view-modes {
+  background: #17171a;
+  border-color: #3d3d43;
+}
+:root[data-theme='dark'] .pdf-view-mode {
+  color: #b3b3b9;
+}
+:root[data-theme='dark'] .pdf-view-mode.is-active {
+  color: #f0f0f2;
+  background: #333338;
+  border-color: #4a4a50;
+}
+:root[data-theme='dark'] .pdf-action,
+:root[data-theme='dark'] .viewer-icon-button {
+  color: #d0d0d4;
+  background: #2a2a2f;
+  border-color: #404046;
+}
+:root[data-theme='dark'] .pdf-action-primary {
+  color: #14241b;
+  background: #8cc5a4;
+  border-color: #8cc5a4;
+}
+
+
+/* ============================================================================
+   4) القاعدة العامة على كل الأزرار (تؤثر على أزرار الهيدر)
+      (المصدر: src/style/08-modals.css)
+   ============================================================================ */
+button {
+  font-size: var(--app-button-font-size, 14px) !important;
+}
+
+
+
+/* ============================================================================
+   5) الكتلة الموحّدة للموبايل (≤ 760px) — نفس محتوى
+      src/style/16-pdf-viewer-header-mobile.css
+   ============================================================================ */
+@media (max-width: 760px) {
+  .pdf-viewer-header {
+    box-sizing: border-box;
+    max-width: 95vw;
+    min-height: 48px;
+    padding: 4px 8px;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 0;
+    /* يبقى ظاهراً أعلى الصفحة أثناء التمرير. */
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--paper);
+  }
+  /* سياق المعاينة كان يجعل الخلفية شفافة — مع التثبيت نحتاج خلفية مصمتة. */
+  .file-preview-page .pdf-viewer-header {
+    background: var(--paper);
+  }
+
+  /* العربية: يبدأ الصف من اليمين (التنقل يميناً والتكبير يساراً). */
+  :root[dir="rtl"] .pdf-viewer-header {
+    direction: rtl;
+  }
+  .pdf-viewer-header .pdf-actions {
+    display: none;
+  }
+  /* الصف يتوسّط بدل أن يمتد على كامل العرض — فلا فراغات ضخمة بين المجموعات. */
+  .pdf-viewer-header .pdf-view-tools {
+    flex: 0 1 auto;
+    width: auto;
+    max-width: 100%;
+    min-width: 0;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  /* فراغ أوضح بين الأزرار داخل كل مجموعة (كان 2px فتبدو الأزرار متلاصقة). */
+  .pdf-viewer-header .pdf-page-controls,
+  .pdf-viewer-header .pdf-zoom-controls {
+    display: flex;
+    flex: 0 0 auto;
+    max-width: none;
+    gap: 6px;
+  }
+  .pdf-viewer-header .viewer-icon-button {
+    width: 32px;
+    height: 40px;
+  }
+  /* عدّاد الصفحات: يظهر بشكل  [1] / 4 — ويتبع اتجاه اللغة:
+     العربية من اليمين (الحقل يميناً و«/ 4» يساره)، والإنجليزية من اليسار. */
+  :root[dir="ltr"] .pdf-viewer-header .pdf-page-count {
+    display: flex;
+    direction: ltr;
+    gap: 3px;
+    min-width: 0;
+    font-size: 12px;
+  }
+  :root[dir="rtl"] .pdf-viewer-header .pdf-page-count {
+    display: flex;
+    direction: rtl;
+    gap: 3px;
+    min-width: 0;
+    font-size: 12px;
+  }
+  .pdf-viewer-header .pdf-page-word,
+  .pdf-viewer-header .pdf-page-of-word {
+    display: none;
+  }
+  .pdf-viewer-header .pdf-page-of::before {
+    content: '/ ';
+  }
+  .pdf-viewer-header .pdf-page-input {
+    width: 34px;
+    height: 30px;
+    font-size: 13px;
+  }
+  .pdf-viewer-header .pdf-view-modes {
+    display: inline-flex;
+    gap: 4px;
+  }
+  :root[dir="ltr"] .pdf-viewer-header .pdf-view-modes {
+    direction: ltr;
+  }
+  .pdf-viewer-header .pdf-view-mode {
+    flex: none;
+    width: 30px;
+    height: 34px;
+  }
+  .pdf-viewer-header .pdf-zoom-controls > .pdf-zoom-label {
+    display: inline;
+    min-width: 34px;
+    font-size: 11px;
+  }
+  /* توافق ملء الشاشة: قواعد 05 داخل is-fullscreen أعلى تخصيصاً،
+     فنعيد هنا النتيجة نفسها (سطر واحد) حتى لا تُكسر الكتلة أثناء is-fullscreen. */
+  .pdf-viewer.is-fullscreen .pdf-viewer-header,
+  body.is-pdf-fullscreen .pdf-viewer.is-fullscreen .pdf-viewer-header {
+    min-height: 48px;
+    flex-wrap: nowrap;
+    align-content: normal;
+  }
+  .pdf-viewer.is-fullscreen .pdf-view-tools {
+    width: auto;
+  }
+}
+
+@media (max-width: 340px) {
+  .pdf-viewer-header .pdf-view-tools {
+    gap: 8px;
+  }
+  .pdf-viewer-header .pdf-zoom-controls > .pdf-zoom-label {
+    display: none;
+  }
+  .pdf-viewer-header .pdf-page-input {
+    width: 30px;
+  }
+}
+
+
+/* ============================================================================
+   6) أهداف اللمس (هاتف/تابلت)
+      (المصدر: src/style/10-header-mobile.css — النهائي: الشاشات الأوسع فقط)
+   ============================================================================ */
+@media (pointer: coarse) and (min-width: 761px) {
+  .viewer-icon-button {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+
+/* ============================================================================
+   7) سياق صفحة المعاينة .file-preview-page (القواعد غير المتجاوبة فقط،
+      لأن القواعد المتجاوبة حُذفت من 05 ضمن هذه المهمة).
+      (المصدر: src/style/03-data-mode.css)
+   ============================================================================ */
+.file-preview-page .pdf-viewer-header {
+  background: none;
+  border: 0;
+  padding-inline: 0;
+}
+.file-preview-page .preview-kind-image .pdf-viewer-header,
+.file-preview-page .preview-kind-video .pdf-viewer-header {
+  display: none;
+}
+.file-preview-page .pdf-page-controls {
+  flex: 0 1 auto;
+  max-width: 40%;
+  min-width: 0;
+}

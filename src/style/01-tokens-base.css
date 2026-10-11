@@ -1,0 +1,71 @@
+:root {
+  font-size: var(--app-font-size, 16px);
+  font-family: var(--app-font-family, 'IBM Plex Sans Arabic'), sans-serif;
+  color: #192c31;
+  background: #f4f5f2;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  --ink: #192c31;
+  --muted: #748184;
+  --line: #e2e7e3;
+  --paper: #fff;
+  --green: #16715f;
+  --orange: #e17a4a;
+  --app-bg: #f4f5f2;
+  --text: #192c31;
+  --text-muted: #758184;
+  --selection: hsla(145, 27%, 53%, 0.976);
+}
+
+* { box-sizing: border-box; }
+.app-shell, .app-shell * { font-family: var(--app-font-family, 'IBM Plex Sans Arabic'), sans-serif !important; }
+
+body {
+  min-width: 0;
+  min-height: 100vh;
+  margin: 0;
+  background-color: var(--app-bg);
+  overflow: hidden;
+}
+
+html, body, #root { height: 100%; }
+html { overflow: hidden; overscroll-behavior: none; }
+body { overscroll-behavior: none; }
+
+button, input { font: inherit; }
+button { color: inherit; }
+
+/* القاعدة المطلقة: الهيدر فوق الجميع مثل نوافذ ويندوز.
+   التمرير يتم داخل .page-scroll فقط (تحت الهيدر)،
+   فالسكرولبار يبدأ من حد الهيدر السفلي ولا يغطيه أبداً. */
+.app-shell { height: calc(100vh / var(--app-display-zoom, 1)); height: calc(100dvh / var(--app-display-zoom, 1)); width: calc(100vw / var(--app-display-zoom, 1)); display: flex; flex-direction: column; overflow: hidden; zoom: var(--app-display-zoom, 1); }
+.brand-name { font-size: 0.9375rem; font-weight: 500; }
+.brand-name strong { font-weight: 700; }
+.eyebrow span { padding: 0 4px; color: #abb5ae; }
+h1, h2, p { margin-top: 0; }
+h1 { margin-bottom: 7px; color: var(--ink); font-size: 2rem; font-weight: 700; line-height: 1.35; }
+.heading-description { margin-bottom: 0; color: #758184; font-size: 0.875rem; }
+.heading-stamp { width: 96px; height: 96px; margin-inline-end: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--green); border: 1px solid #cbd9d1; border-radius: 50%; transform: rotate(-11deg); }
+.heading-stamp span { font-family: 'DM Mono', monospace; font-size: 0.4375rem; letter-spacing: 1.2px; }
+
+.records-section { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 18px; align-items: start; animation: reveal 560ms 80ms ease both; }
+/* هيدر التبويب الموحد وحالة الفراغ صف كامل فوق المحتوى (صفحة الحسابات بلا شريط أفراد). */
+.records-section > .rtc, .records-section > .vault-empty { grid-column: 1 / -1; }
+.member-tabs { position: sticky; top: 64px; align-self: start; max-height: calc(100vh - 78px); overflow-y: auto; display: flex; flex-direction: column; gap: 7px; overscroll-behavior: contain; scrollbar-color: #d3ddd6 transparent; scrollbar-width: thin; }
+.member-tab { position: relative; min-height: 72px; padding: 12px 13px; display: flex; align-items: center; gap: 11px; text-align: right; background: rgba(255,255,255,.72); border: 1px solid #e4e8e4; border-radius: 6px; cursor: pointer; transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease; }
+.member-tab:hover { border-color: #76a68c; box-shadow: 0 0 0 2px #16715f24; }
+.member-tab.is-active { background: var(--ink); color: #fff; border-color: var(--ink); box-shadow: 0 6px 18px #1d343014; }
+.tab-index { align-self: flex-start; padding-top: 2px; color: #9daaa6; font: 0.6875rem 'DM Mono', monospace; }
+.member-tab.is-active .tab-index { color: #8db7a8; }
+.tab-text { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.tab-name { overflow: hidden; font-size: 0.8125rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.tab-relation { color: #84908f; font-size: 0.6875rem; }
+.member-tab.is-active .tab-relation { color: #b4c7bf; }
+.tab-icon { color: #9ba7a3; }
+.member-tab.is-active .tab-icon { color: #7ec3a8; }
+
+.record-panel { overflow: hidden; background: var(--paper); border: 1px solid #e2e7e3; border-radius: 7px; box-shadow: 0 13px 34px #1d34300a; }

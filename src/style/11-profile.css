@@ -1,0 +1,72 @@
+/* ————— الملف الشخصي (Mobile-First) ————— */
+
+
+
+
+
+/* ————— قائمة البروفايل المنسدلة في الهيدر ————— */
+.profile-menu-wrap { position: relative; flex: 0 0 auto; }
+.profile-avatar-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: var(--ink);
+  background: #f4f7f4;
+  border: 1px solid var(--line, #e2e7e3);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.profile-avatar-btn:hover { border-color: #b9d0c3; box-shadow: 0 0 0 2px #16715f24; }
+.profile-avatar-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.profile-avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
+.profile-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  z-index: 1200;
+  min-width: 172px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--paper, #fff);
+  border: 1px solid var(--line, #e2e7e3);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px #1d343022;
+  animation: modal-fade-in 150ms ease both;
+}
+.profile-menu-item {
+  min-height: 40px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  font-size: 0.8125rem;
+  text-align: start;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.profile-menu-item:hover { background: #f4f7f4; }
+.profile-menu-item.is-active { color: var(--green); background: #edf4ef; font-weight: 700; }
+.profile-menu-item:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }
+.profile-menu-item svg { flex: 0 0 auto; }
+:root[data-theme='dark'] .profile-avatar-btn { color: #e4e4e8; background: #242428; border-color: #3b3b41; }
+:root[data-theme='dark'] .profile-menu { background: var(--paper); border-color: #3b3b41; box-shadow: 0 12px 32px rgba(0,0,0,0.45); }
+:root[data-theme='dark'] .profile-menu-item { color: #e4e4e8; }
+:root[data-theme='dark'] .profile-menu-item:hover { background: #2a2a2f; }
+:root[data-theme='dark'] .profile-menu-item.is-active { color: #a5d4b9; background: #333338; }
+@media (min-width: 700px) {
+
+
+}
+
+
+
